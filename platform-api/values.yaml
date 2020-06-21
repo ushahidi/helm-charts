@@ -1,0 +1,61 @@
+mysql:
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
+
+redis:
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
+
+config:
+  appkey: "SomeRandomKey!!!SomeRandomKey!!!"
+  db:
+    host: mysql
+    port: 3306
+    database: ushahidi
+    username: ushahidi
+    password: ushahidi
+  redis:
+    host: redis
+    port: 6379
+  drivers:
+    cache: redis
+    queue: redis
+
+api:
+  replicas: 1
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
+  ingress:
+    enabled: false
+    # annotations:
+    # tls:
+    # - secretName: domain.example.com
+    #   hosts:
+    #   - domain.example.com
+    host: # domain.example.com
+
+worker:
+  replicas: 1
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
+
+image:
+  repository: ushahidi
+  name: platform
+  tag: latest

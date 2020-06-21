@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app: platform
+    service: mysql
+  name: mysql-ephemeral
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform
+      service: mysql
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: platform
+        service: mysql
+    spec:
+      containers:
+      - command:
+        - docker-entrypoint.sh
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        # - --general-log=1
+        # - --general-log-file=/tmp/queries.log
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: ushahidi
+        - name: MYSQL_USER
+          value: ushahidi
+        - name: MYSQL_PASSWORD
+          value: ushahidi
+        image: mysql:5.7
+        imagePullPolicy: Always
+        name: mysql
+        ports:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.mysql.limits.cpu }}
+            memory: {{ .Values.mysql.limits.memory }}
+          requests:
+            cpu: {{ .Values.mysql.requests.cpu }}
+            memory: {{ .Values.mysql.requests.memory }}
+      terminationGracePeriodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: platform
+    service: mysql
+  name: mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: platform
+    service: mysql
+  type: ClusterIP

@@ -1,0 +1,206 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app: platform
+    service: api
+  name: api
+
+spec:
+  minReadySeconds: 5
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app: platform
+      service: api
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: platform
+        service: api
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - /entrypoint.CES.sh
+        - start
+        livenessProbe:
+          httpGet:
+            path: /api/v3/config
+            port: 8080
+        env:
+        - name: APP_KEY
+          value: {{ .Values.config.appkey }}
+        - name: DB_CONNECTION
+          value: mysql
+        - name: DB_HOST
+          value: {{ .Values.config.db.host }}
+        - name: DB_PORT
+          value: {{ .Values.config.db.port }}
+        - name: DB_DATABASE
+          value: {{ .Values.config.db.database }}
+        - name: DB_USERNAME
+          value: {{ .Values.config.db.username }}
+        - name: DB_PASSWORD
+          value: {{ .Values.config.db.password }}
+        - name: REDIS_HOST
+          value: {{ .Values.config.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.config.redis.port }}
+        - name: CACHE_DRIVER
+          value: {{ .Values.config.drivers.cache }}
+        - name: QUEUE_DRIVER
+          value: {{ .Values.config.drivers.queue }}
+        - { name: DOCKERIZE_TIMEOUT, value: 180s }
+        - { name: DOCKERIZE_WAIT_FOR_mysql, value: "tcp://mysql:3306" }
+        - { name: DOCKERIZE_WAIT_FOR_redis, value: "tcp://redis:6379" }
+        - { name: ENABLE_NGINX, value: "true" }
+        - { name: ENABLE_PHPFPM, value: "true" }
+        - { name: ENABLE_PLATFORM_TASKS, value: "false" }
+        - { name: ENABLE_QUEUE_LISTEN, value: "false" }
+        - { name: RUN_PLATFORM_MIGRATIONS, value: "true" }
+        image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: api
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.api.limits.cpu }}
+            memory: {{ .Values.api.limits.memory }}
+          requests:
+            cpu: {{ .Values.api.requests.cpu }}
+            memory: {{ .Values.api.requests.memory }}
+      terminationGracePeriodSeconds: 15
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: platform
+    service: api
+  name: api
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: platform
+    service: api
+  type: ClusterIP
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app: platform
+    service: worker
+  name: worker
+
+spec:
+  progressDeadlineSeconds: 600
+  minReadySeconds: 5
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app: platform
+      service: worker
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: platform
+        service: worker
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - /entrypoint.CES.sh
+        - start
+        env:
+        - name: APP_KEY
+          value: {{ .Values.config.appkey }}
+        - name: DB_CONNECTION
+          value: mysql
+        - name: DB_HOST
+          value: {{ .Values.config.db.host }}
+        - name: DB_PORT
+          value: {{ .Values.config.db.port }}
+        - name: DB_DATABASE
+          value: {{ .Values.config.db.database }}
+        - name: DB_USERNAME
+          value: {{ .Values.config.db.username }}
+        - name: DB_PASSWORD
+          value: {{ .Values.config.db.password }}
+        - name: REDIS_HOST
+          value: {{ .Values.config.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.config.redis.port }}
+        - name: CACHE_DRIVER
+          value: {{ .Values.config.drivers.cache }}
+        - name: QUEUE_DRIVER
+          value: {{ .Values.config.drivers.queue }}
+        - { name: DOCKERIZE_TIMEOUT, value: 180s }
+        - { name: DOCKERIZE_WAIT_FOR_mysql, value: "tcp://mysql:3306" }
+        - { name: DOCKERIZE_WAIT_FOR_redis, value: "tcp://redis:6379" }
+        - { name: ENABLE_NGINX, value: "false" }
+        - { name: ENABLE_PHPFPM, value: "false" }
+        - { name: ENABLE_PLATFORM_TASKS, value: "true" }
+        - { name: ENABLE_QUEUE_LISTEN, value: "true" }
+        - { name: RUN_PLATFORM_MIGRATIONS, value: "false" }
+        image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: worker
+        resources:
+          limits:
+            cpu: {{ .Values.worker.limits.cpu }}
+            memory: {{ .Values.worker.limits.memory }}
+          requests:
+            cpu: {{ .Values.worker.requests.cpu }}
+            memory: {{ .Values.worker.requests.memory }}
+      terminationGracePeriodSeconds: 15
+
+{{- if .Values.api.ingress.enabled }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+{{- if .Values.api.ingress.annotations }}
+  annotations:
+{{ toYaml .Values.api.ingress.annotations | indent 4 }}
+{{- end }}
+  name: api
+spec:
+  rules:
+  - host: {{ .Values.api.ingress.host | quote }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: api
+          servicePort: http
+{{- if .Values.api.ingress.tls }}
+  tls:
+{{ toYaml .Values.api.ingress.tls | indent 4 }}
+{{- end -}}
+{{- end }}
