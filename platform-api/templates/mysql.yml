@@ -1,3 +1,4 @@
+{{- if .Values.mysql.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,8 +32,6 @@ spec:
         - docker-entrypoint.sh
         - --character-set-server=utf8mb4
         - --collation-server=utf8mb4_unicode_ci
-        # - --general-log=1
-        # - --general-log-file=/tmp/queries.log
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: root
@@ -76,3 +75,5 @@ spec:
     app: platform
     service: mysql
   type: ClusterIP
+
+{{- end }}

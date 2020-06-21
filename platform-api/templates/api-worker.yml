@@ -1,3 +1,14 @@
+{{- if .Values.config.dotenv }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dotenv
+data:
+  .env: |-
+{{ .Values.config.dotenv | indent 4 }}
+{{- end }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -39,37 +50,61 @@ spec:
         env:
         - name: APP_KEY
           value: {{ .Values.config.appkey }}
+        - name: APP_DEBUG
+          value: {{ .Values.api.debug | quote }}
+        - name: APP_TIMEZONE
+          value: {{ .Values.config.timezone }}
         - name: DB_CONNECTION
           value: mysql
         - name: DB_HOST
           value: {{ .Values.config.db.host }}
         - name: DB_PORT
-          value: {{ .Values.config.db.port }}
+          value: {{ .Values.config.db.port | quote }}
         - name: DB_DATABASE
           value: {{ .Values.config.db.database }}
         - name: DB_USERNAME
           value: {{ .Values.config.db.username }}
         - name: DB_PASSWORD
           value: {{ .Values.config.db.password }}
+        - name: HDX_URL
+          value: {{ .Values.config.hdx_url }}
+        - name: MAIL_ADDRESS
+          value: {{ .Values.config.mail_from.address }}
+        - name: MAIL_NAME
+          value: {{ .Values.config.mail_from.name }}
         - name: REDIS_HOST
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
-          value: {{ .Values.config.redis.port }}
+          value: {{ .Values.config.redis.port | quote }}
         - name: CACHE_DRIVER
           value: {{ .Values.config.drivers.cache }}
         - name: QUEUE_DRIVER
           value: {{ .Values.config.drivers.queue }}
+        - name: RATELIMITER_CACHE
+          value: {{ .Values.config.drivers.ratelimiter_cache }}
         - { name: DOCKERIZE_TIMEOUT, value: 180s }
-        - { name: DOCKERIZE_WAIT_FOR_mysql, value: "tcp://mysql:3306" }
-        - { name: DOCKERIZE_WAIT_FOR_redis, value: "tcp://redis:6379" }
+        - name: DOCKERIZE_WAIT_FOR_mysql
+          value: "tcp://{{ .Values.config.db.host }}:{{ .Values.config.db.port }}"
+        - name: DOCKERIZE_WAIT_FOR_redis
+          value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
+        - name: PHP_EXEC_TIME_LIMIT
+          value: {{ .Values.api.params.php_exec_time_limit | quote }}
         - { name: ENABLE_NGINX, value: "true" }
         - { name: ENABLE_PHPFPM, value: "true" }
         - { name: ENABLE_PLATFORM_TASKS, value: "false" }
         - { name: ENABLE_QUEUE_LISTEN, value: "false" }
         - { name: RUN_PLATFORM_MIGRATIONS, value: "true" }
+        {{- if .Values.config.dotenv }}
+        - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api
+        {{- if .Values.config.dotenv }}
+        volumeMounts:
+        - name: config-dotenv-file
+          mountPath: /var/www/.cfg/dotenv
+        {{- end }}
         ports:
         - containerPort: 8080
           name: http
@@ -81,6 +116,12 @@ spec:
           requests:
             cpu: {{ .Values.api.requests.cpu }}
             memory: {{ .Values.api.requests.memory }}
+      {{- if .Values.config.dotenv }}
+      volumes:
+      - name: config-dotenv-file
+        configMap:
+          name: dotenv
+      {{- end }}
       terminationGracePeriodSeconds: 15
 
 ---
@@ -140,37 +181,59 @@ spec:
         env:
         - name: APP_KEY
           value: {{ .Values.config.appkey }}
+        - name: APP_DEBUG
+          value: {{ .Values.api.debug | quote }}
+        - name: APP_TIMEZONE
+          value: {{ .Values.config.timezone }}
         - name: DB_CONNECTION
           value: mysql
         - name: DB_HOST
           value: {{ .Values.config.db.host }}
         - name: DB_PORT
-          value: {{ .Values.config.db.port }}
+          value: {{ .Values.config.db.port | quote }}
         - name: DB_DATABASE
           value: {{ .Values.config.db.database }}
         - name: DB_USERNAME
           value: {{ .Values.config.db.username }}
         - name: DB_PASSWORD
           value: {{ .Values.config.db.password }}
+        - name: HDX_URL
+          value: {{ .Values.config.hdx_url }}
+        - name: MAIL_ADDRESS
+          value: {{ .Values.config.mail_from.address }}
+        - name: MAIL_NAME
+          value: {{ .Values.config.mail_from.name }}
         - name: REDIS_HOST
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
-          value: {{ .Values.config.redis.port }}
+          value: {{ .Values.config.redis.port | quote }}
         - name: CACHE_DRIVER
           value: {{ .Values.config.drivers.cache }}
         - name: QUEUE_DRIVER
           value: {{ .Values.config.drivers.queue }}
+        - name: RATELIMITER_CACHE
+          value: {{ .Values.config.drivers.ratelimiter_cache }}
         - { name: DOCKERIZE_TIMEOUT, value: 180s }
-        - { name: DOCKERIZE_WAIT_FOR_mysql, value: "tcp://mysql:3306" }
-        - { name: DOCKERIZE_WAIT_FOR_redis, value: "tcp://redis:6379" }
+        - name: DOCKERIZE_WAIT_FOR_mysql
+          value: "tcp://{{ .Values.config.db.host }}:{{ .Values.config.db.port }}"
+        - name: DOCKERIZE_WAIT_FOR_redis
+          value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
         - { name: ENABLE_NGINX, value: "false" }
         - { name: ENABLE_PHPFPM, value: "false" }
         - { name: ENABLE_PLATFORM_TASKS, value: "true" }
         - { name: ENABLE_QUEUE_LISTEN, value: "true" }
         - { name: RUN_PLATFORM_MIGRATIONS, value: "false" }
+        {{- if .Values.config.dotenv }}
+        - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: worker
+        {{- if .Values.config.dotenv }}
+        volumeMounts:
+        - name: config-dotenv-file
+          mountPath: /var/www/.cfg/dotenv
+        {{- end }}
         resources:
           limits:
             cpu: {{ .Values.worker.limits.cpu }}
@@ -178,6 +241,12 @@ spec:
           requests:
             cpu: {{ .Values.worker.requests.cpu }}
             memory: {{ .Values.worker.requests.memory }}
+      {{- if .Values.config.dotenv }}
+      volumes:
+      - name: config-dotenv-file
+        configMap:
+          name: dotenv
+      {{- end }}
       terminationGracePeriodSeconds: 15
 
 {{- if .Values.api.ingress.enabled }}
@@ -188,6 +257,8 @@ metadata:
 {{- if .Values.api.ingress.annotations }}
   annotations:
 {{ toYaml .Values.api.ingress.annotations | indent 4 }}
+{{- else }}
+  annotations: {}
 {{- end }}
   name: api
 spec:

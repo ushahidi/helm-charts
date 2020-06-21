@@ -77,6 +77,8 @@ metadata:
 {{- if .Values.ingress.annotations }}
   annotations:
 {{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- else }}
+  annotations: {}
 {{- end }}
   name: client
 spec:
