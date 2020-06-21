@@ -1,2 +1,4 @@
 owner: ushahidi
 git-repo: helm-charts
+charts-repo: https://github.com/ushahidi/helm-charts
+index-path: index.yaml
