@@ -13,7 +13,12 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- if .Values.api.deployment.annotations }}
+  annotations:
+{{ toYaml .Values.api.deployment.annotations | indent 4 }}
+{{- else }}
   annotations: {}
+{{- end }}
   labels:
     app: platform
     service: api
@@ -49,7 +54,16 @@ spec:
             port: 8080
         env:
         - name: APP_KEY
-          value: {{ .Values.config.appkey }}
+          {{- if .Values.config.appkey }}
+          value: {{ .Values.config.appkey | quote }}
+          {{ else if .Values.config.appkey_secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.appkey_secret.name }}
+              key: {{ .Values.config.appkey_secret.key }}
+          {{ else }}
+          value: {{ randAlphaNum 32 | quote }}
+          {{- end }}
         - name: APP_DEBUG
           value: {{ .Values.api.debug | quote }}
         - name: APP_TIMEZONE
@@ -65,7 +79,14 @@ spec:
         - name: DB_USERNAME
           value: {{ .Values.config.db.username }}
         - name: DB_PASSWORD
-          value: {{ .Values.config.db.password }}
+          {{- if .Values.config.db.password_secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.db.password_secret.name }}
+              key: {{ .Values.config.db.password_secret.key }}
+          {{- else }}
+          value: {{ .Values.config.db.password | quote }}
+          {{- end }}
         - name: HDX_URL
           value: {{ .Values.config.hdx_url }}
         - name: MAIL_ADDRESS
@@ -97,13 +118,22 @@ spec:
         {{- if .Values.config.dotenv }}
         - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
         {{- end }}
+        {{- if .Values.config.passport_keys_secret }}
+        - { name: PASSPORT_KEYS_PATH, value: "/var/www/.cfg/passport" }
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api
-        {{- if .Values.config.dotenv }}
+        {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
         volumeMounts:
+        {{- if .Values.config.dotenv }}
         - name: config-dotenv-file
           mountPath: /var/www/.cfg/dotenv
+        {{- end }}
+        {{- if .Values.config.passport_keys_secret }}
+        - name: passport-keys
+          mountPath: /var/www/.cfg/passport
+        {{- end }}
         {{- end }}
         ports:
         - containerPort: 8080
@@ -116,11 +146,19 @@ spec:
           requests:
             cpu: {{ .Values.api.requests.cpu }}
             memory: {{ .Values.api.requests.memory }}
-      {{- if .Values.config.dotenv }}
+      {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
       volumes:
+      {{- if .Values.config.dotenv  }}
       - name: config-dotenv-file
         configMap:
           name: dotenv
+      {{- end }}
+      {{- if .Values.config.passport_keys_secret }}
+      - name: passport-keys
+        secret:
+          secretName: {{ .Values.config.passport_keys_secret }}
+          defaultMode: 0600
+      {{- end }}
       {{- end }}
       terminationGracePeriodSeconds: 15
 
@@ -148,7 +186,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- if .Values.worker.deployment.annotations }}
+  annotations:
+{{ toYaml .Values.worker.deployment.annotations | indent 4 }}
+{{- else }}
   annotations: {}
+{{- end }}
   labels:
     app: platform
     service: worker
@@ -180,7 +223,16 @@ spec:
         - start
         env:
         - name: APP_KEY
-          value: {{ .Values.config.appkey }}
+          {{- if .Values.config.appkey }}
+          value: {{ .Values.config.appkey | quote }}
+          {{ else if .Values.config.appkey_secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.appkey_secret.name }}
+              key: {{ .Values.config.appkey_secret.key }}
+          {{ else }}
+          value: {{ randAlphaNum 32 | quote }}
+          {{- end }}
         - name: APP_DEBUG
           value: {{ .Values.api.debug | quote }}
         - name: APP_TIMEZONE
@@ -196,7 +248,14 @@ spec:
         - name: DB_USERNAME
           value: {{ .Values.config.db.username }}
         - name: DB_PASSWORD
-          value: {{ .Values.config.db.password }}
+          {{- if .Values.config.db.password_secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.db.password_secret.name }}
+              key: {{ .Values.config.db.password_secret.key }}
+          {{- else }}
+          value: {{ .Values.config.db.password | quote }}
+          {{- end }}
         - name: HDX_URL
           value: {{ .Values.config.hdx_url }}
         - name: MAIL_ADDRESS
@@ -226,13 +285,22 @@ spec:
         {{- if .Values.config.dotenv }}
         - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
         {{- end }}
+        {{- if .Values.config.passport_keys_secret }}
+        - { name: PASSPORT_KEYS_PATH, value: "/var/www/.cfg/passport" }
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: worker
-        {{- if .Values.config.dotenv }}
+        {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
         volumeMounts:
+        {{- if .Values.config.dotenv }}
         - name: config-dotenv-file
           mountPath: /var/www/.cfg/dotenv
+        {{- end }}
+        {{- if .Values.config.passport_keys_secret }}
+        - name: passport-keys
+          mountPath: /var/www/.cfg/passport
+        {{- end }}
         {{- end }}
         resources:
           limits:
@@ -241,11 +309,19 @@ spec:
           requests:
             cpu: {{ .Values.worker.requests.cpu }}
             memory: {{ .Values.worker.requests.memory }}
-      {{- if .Values.config.dotenv }}
+      {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
       volumes:
+      {{- if .Values.config.dotenv  }}
       - name: config-dotenv-file
         configMap:
           name: dotenv
+      {{- end }}
+      {{- if .Values.config.passport_keys_secret }}
+      - name: passport-keys
+        secret:
+          secretName: {{ .Values.config.passport_keys_secret }}
+          defaultMode: 0600
+      {{- end }}
       {{- end }}
       terminationGracePeriodSeconds: 15
 
