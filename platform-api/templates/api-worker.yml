@@ -117,7 +117,7 @@ spec:
         - { name: ENABLE_PLATFORM_TASKS, value: "false" }
         - { name: ENABLE_QUEUE_LISTEN, value: "false" }
         - { name: RUN_PLATFORM_MIGRATIONS, value: "true" }
-        {{- if .Values.config.dotenv }}
+        {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) }}
         - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
         {{- end }}
         {{- if .Values.config.passport_keys_secret }}
@@ -126,10 +126,14 @@ spec:
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api
-        {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
+        {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) (.Values.config.passport_keys_secret) }}
         volumeMounts:
         {{- if .Values.config.dotenv }}
         - name: config-dotenv-file
+          mountPath: /var/www/.cfg/dotenv
+        {{- end }}
+        {{- if .Values.config.dotenv_secret }}
+        - name: dotenv-secret
           mountPath: /var/www/.cfg/dotenv
         {{- end }}
         {{- if .Values.config.passport_keys_secret }}
@@ -148,12 +152,21 @@ spec:
           requests:
             cpu: {{ .Values.api.requests.cpu }}
             memory: {{ .Values.api.requests.memory }}
-      {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
+      {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) (.Values.config.passport_keys_secret) }}
       volumes:
       {{- if .Values.config.dotenv  }}
       - name: config-dotenv-file
         configMap:
           name: dotenv
+      {{- end }}
+      {{- if .Values.config.dotenv_secret  }}
+      - name: dotenv-secret
+        secret:
+          secretName: {{ .Values.config.dotenv_secret.name }}
+          items:
+          - key: {{ .Values.config.dotenv_secret.key }}
+            path: .env
+          defaultMode: 0600
       {{- end }}
       {{- if .Values.config.passport_keys_secret }}
       - name: passport-keys
@@ -286,7 +299,7 @@ spec:
         - { name: ENABLE_PLATFORM_TASKS, value: "true" }
         - { name: ENABLE_QUEUE_LISTEN, value: "true" }
         - { name: RUN_PLATFORM_MIGRATIONS, value: "false" }
-        {{- if .Values.config.dotenv }}
+        {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) }}
         - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
         {{- end }}
         {{- if .Values.config.passport_keys_secret }}
@@ -301,6 +314,10 @@ spec:
         - name: config-dotenv-file
           mountPath: /var/www/.cfg/dotenv
         {{- end }}
+        {{- if .Values.config.dotenv_secret }}
+        - name: dotenv-secret
+          mountPath: /var/www/.cfg/dotenv
+        {{- end }}
         {{- if .Values.config.passport_keys_secret }}
         - name: passport-keys
           mountPath: /var/www/.cfg/passport
@@ -313,12 +330,21 @@ spec:
           requests:
             cpu: {{ .Values.worker.requests.cpu }}
             memory: {{ .Values.worker.requests.memory }}
-      {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
+      {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) (.Values.config.passport_keys_secret) }}
       volumes:
       {{- if .Values.config.dotenv  }}
       - name: config-dotenv-file
         configMap:
           name: dotenv
+      {{- end }}
+      {{- if .Values.config.dotenv_secret  }}
+      - name: dotenv-secret
+        secret:
+          secretName: {{ .Values.config.dotenv_secret.name }}
+          items:
+          - key: {{ .Values.config.dotenv_secret.key }}
+            path: .env
+          defaultMode: 0600
       {{- end }}
       {{- if .Values.config.passport_keys_secret }}
       - name: passport-keys
