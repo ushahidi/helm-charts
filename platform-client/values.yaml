@@ -9,6 +9,8 @@ limits:
 requests:
   cpu: "10m"
   memory: "64Mi"
+# deployment:
+#   annotations:
 ingress:
   enabled: false
   # annotations:

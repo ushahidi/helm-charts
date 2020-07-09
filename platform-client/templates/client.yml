@@ -2,7 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- if hasKey .Values "deployment" }}
+{{- if .Values.deployment.annotations }}
+  annotations:
+{{ toYaml .Values.deployment.annotations | indent 4 }}
+{{- else }}
   annotations: {}
+{{- end }}
+{{- end }}
   labels:
     app: platform
     service: client

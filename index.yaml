@@ -2,20 +2,20 @@ apiVersion: v1
 entries:
   ushahidi-platform-api:
   - apiVersion: v1
-    created: "2020-07-09T11:48:01.684435+02:00"
-    digest: 6e08b9e8c9351c16a0377b5a5448eac1b524597f56b36fdbf2c7ff2e600629d3
+    created: "2020-07-09T13:08:37.107842+02:00"
+    digest: b2e8ebf48377578d73e966979520c6f4711595245d174ad53fdb1039e9852027
     icon: https://github.ushahidi.org/helm-charts/icon.png
     name: ushahidi-platform-api
     urls:
-    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-api-0.0.1-alpha.4/ushahidi-platform-api-0.0.1-alpha.4.tgz
-    version: 0.0.1-alpha.4
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-api-0.0.1-alpha.5/ushahidi-platform-api-0.0.1-alpha.5.tgz
+    version: 0.0.1-alpha.5
   ushahidi-platform-client:
   - apiVersion: v1
-    created: "2020-07-09T11:48:01.858748+02:00"
-    digest: b08527b0035daf17f1fa9ae808b4cb8061d3bf32d5fecf804c1444940f26ab75
+    created: "2020-07-09T13:08:37.283637+02:00"
+    digest: a47234d95e7f0c0cb75bb9b0abd7cee1859de85534248af8e4a5f7df066da551
     icon: https://github.ushahidi.org/helm-charts/icon.png
     name: ushahidi-platform-client
     urls:
-    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.4/ushahidi-platform-client-0.0.1-alpha.4.tgz
-    version: 0.0.1-alpha.4
-generated: "2020-07-09T11:48:01.34865+02:00"
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.5/ushahidi-platform-client-0.0.1-alpha.5.tgz
+    version: 0.0.1-alpha.5
+generated: "2020-07-09T13:08:36.696918+02:00"
