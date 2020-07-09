@@ -1,4 +1,4 @@
 apiVersion: v1
 name: ushahidi-platform-client
-version: 0.0.1-alpha.3
+version: 0.0.1-alpha.4
 icon: https://github.ushahidi.org/helm-charts/icon.png

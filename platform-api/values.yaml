@@ -54,8 +54,8 @@ api:
   requests:
     cpu: "10m"
     memory: "64Mi"
-  deployment:
-    # annotations:
+  # deployment:
+  #   annotations:
   ingress:
     enabled: false
     # annotations:
@@ -74,8 +74,8 @@ worker:
   requests:
     cpu: "10m"
     memory: "64Mi"
-  deployment:
-    # annotations:
+  # deployment:
+  #   annotations:
 
 # This provides a compatible mysql server, with EPHEMERAL storage.
 # Don't rely on it for production.

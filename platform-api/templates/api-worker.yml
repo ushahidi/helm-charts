@@ -13,11 +13,13 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- if hasKey .Values.api "deployment" }}
 {{- if .Values.api.deployment.annotations }}
   annotations:
 {{ toYaml .Values.api.deployment.annotations | indent 4 }}
 {{- else }}
   annotations: {}
+{{- end }}
 {{- end }}
   labels:
     app: platform
@@ -186,11 +188,13 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+{{- if hasKey .Values.worker "deployment" }}
 {{- if .Values.worker.deployment.annotations }}
   annotations:
 {{ toYaml .Values.worker.deployment.annotations | indent 4 }}
 {{- else }}
   annotations: {}
+{{- end }}
 {{- end }}
   labels:
     app: platform
