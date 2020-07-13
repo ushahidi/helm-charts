@@ -90,11 +90,53 @@ spec:
           value: {{ .Values.config.db.password | quote }}
           {{- end }}
         - name: HDX_URL
-          value: {{ .Values.config.hdx_url }}
+          value: {{ .Values.config.hdx_url | quote }}
         - name: MAIL_ADDRESS
-          value: {{ .Values.config.mail_from.address }}
+          value: {{ .Values.config.mail_from.address | quote }}
         - name: MAIL_NAME
-          value: {{ .Values.config.mail_from.name }}
+          value: {{ .Values.config.mail_from.name | quote }}
+        {{- if .Values.config.smtp_mail }}
+        - name: MAIL_DRIVER
+          value: smtp
+        - name: MAIL_HOST
+          value: {{ .Values.config.smtp_mail.host | quote }}
+        - name: MAIL_PORT
+          value: {{ .Values.config.smtp_mail.port | default "587" | quote }}
+        - name: MAIL_ENCRYPTION
+          value: {{ .Values.config.smtp_mail.encryption | default "tls" | quote }}
+        {{- if .Values.config.smtp_mail.username }}
+        - name: MAIL_USERNAME
+          value: {{ .Values.config.smtp_mail.username | quote }}
+        {{- end }}
+        {{- if .Values.config.smtp_mail.password }}
+        - name: MAIL_PASSWORD
+          value: {{ .Values.config.smtp_mail.password | quote }}
+        {{- end }}
+        {{- if .Values.config.smtp_mail.password_secret }}
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.smtp_mail.password_secret.name }}
+              key: {{ .Values.config.smtp_mail.password_secret.key }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.config.mailgun_mail }}
+        - name: MAIL_DRIVER
+          value: mailgun
+        - name: MAILGUN_DOMAIN
+          value: {{ .Values.config.mailgun_mail.domain | quote }}
+        {{- if .Values.config.mailgun_mail.secret }}
+        - name: MAILGUN_SECRET
+          value: {{ .Values.config.mailgun_mail.secret | quote }}
+        {{- end }}
+        {{- if .Values.config.mailgun_mail.secret_ref }}
+        - name: MAILGUN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.mailgun_mail.secret_ref.name }}
+              key: {{ .Values.config.mailgun_mail.secret_ref.key }}
+        {{- end }}
+        {{- end }}
         - name: REDIS_HOST
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
@@ -274,11 +316,53 @@ spec:
           value: {{ .Values.config.db.password | quote }}
           {{- end }}
         - name: HDX_URL
-          value: {{ .Values.config.hdx_url }}
+          value: {{ .Values.config.hdx_url | quote }}
         - name: MAIL_ADDRESS
-          value: {{ .Values.config.mail_from.address }}
+          value: {{ .Values.config.mail_from.address | quote }}
         - name: MAIL_NAME
-          value: {{ .Values.config.mail_from.name }}
+          value: {{ .Values.config.mail_from.name | quote }}
+        {{- if .Values.config.smtp_mail }}
+        - name: MAIL_DRIVER
+          value: smtp
+        - name: MAIL_HOST
+          value: {{ .Values.config.smtp_mail.host | quote }}
+        - name: MAIL_PORT
+          value: {{ .Values.config.smtp_mail.port | default "587" | quote }}
+        - name: MAIL_ENCRYPTION
+          value: {{ .Values.config.smtp_mail.encryption | default "tls" | quote }}
+        {{- if .Values.config.smtp_mail.username }}
+        - name: MAIL_USERNAME
+          value: {{ .Values.config.smtp_mail.username | quote }}
+        {{- end }}
+        {{- if .Values.config.smtp_mail.password }}
+        - name: MAIL_PASSWORD
+          value: {{ .Values.config.smtp_mail.password | quote }}
+        {{- end }}
+        {{- if .Values.config.smtp_mail.password_secret }}
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.smtp_mail.password_secret.name }}
+              key: {{ .Values.config.smtp_mail.password_secret.key }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.config.mailgun_mail }}
+        - name: MAIL_DRIVER
+          value: mailgun
+        - name: MAILGUN_DOMAIN
+          value: {{ .Values.config.mailgun_mail.domain | quote }}
+        {{- if .Values.config.mailgun_mail.secret }}
+        - name: MAILGUN_SECRET
+          value: {{ .Values.config.mailgun_mail.secret | quote }}
+        {{- end }}
+        {{- if .Values.config.mailgun_mail.secret_ref }}
+        - name: MAILGUN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.mailgun_mail.secret_ref.name }}
+              key: {{ .Values.config.mailgun_mail.secret_ref.key }}
+        {{- end }}
+        {{- end }}
         - name: REDIS_HOST
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
