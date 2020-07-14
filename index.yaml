@@ -2,15 +2,15 @@ apiVersion: v1
 entries:
   ushahidi-platform-api:
   - apiVersion: v1
-    created: "2020-07-14T08:39:15.437993+02:00"
-    digest: 6a090c7743e60a144377ba0fcc31cb3a16213d4740575b895f216746ba53b2e6
+    created: "2020-07-14T10:49:42.992525+02:00"
+    digest: 730cf84816d785c87adf8f34f4925dfdef6243bc84736fc0b26c0f82b062071c
     icon: https://github.ushahidi.org/helm-charts/icon.png
     name: ushahidi-platform-api
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-api-0.0.1-alpha.7/ushahidi-platform-api-0.0.1-alpha.7.tgz
     version: 0.0.1-alpha.7
   - apiVersion: v1
-    created: "2020-07-14T08:39:15.270443+02:00"
+    created: "2020-07-14T10:49:42.821999+02:00"
     digest: faabae6e93928d58d26975ff971cf163bfcbf334cc321bcda98c60cdedafa1bb
     icon: https://github.ushahidi.org/helm-charts/icon.png
     name: ushahidi-platform-api
@@ -19,11 +19,20 @@ entries:
     version: 0.0.1-alpha.6
   ushahidi-platform-client:
   - apiVersion: v1
-    created: "2020-07-14T08:39:15.611295+02:00"
-    digest: edc249ca393003551cb8c30e20aabb852f5453cc1f135076f8c9e4bf7a564c96
+    created: "2020-07-14T10:49:43.167594+02:00"
+    digest: 25d78af40e55a288798dc92efec3417589a300a432cb1517dc4f13079818076d
     icon: https://github.ushahidi.org/helm-charts/icon.png
     name: ushahidi-platform-client
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.6/ushahidi-platform-client-0.0.1-alpha.6.tgz
     version: 0.0.1-alpha.6
-generated: "2020-07-14T08:39:14.721557+02:00"
+  ushahidi-ussd-engine:
+  - apiVersion: v1
+    created: "2020-07-14T10:49:43.376152+02:00"
+    digest: 98ae918a3ed00fcae6e312311baa03b975175e11c4c42d98e0b358fd1e71da0f
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-ussd-engine
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.1/ushahidi-ussd-engine-0.0.1-alpha.1.tgz
+    version: 0.0.1-alpha.1
+generated: "2020-07-14T10:49:42.4983+02:00"
