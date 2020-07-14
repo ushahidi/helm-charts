@@ -31,6 +31,21 @@ config:
   mail_from:
     address: admin@example.com
     name: "Platform Deployment Admin"
+  # smtp_mail:
+  #   host:
+  #   port: 587
+  #   encryption: tls
+  #   username:
+  #   password
+  #   password_secret:
+  #     name:
+  #     key:
+  # mailgun_mail:
+  #   domain:
+  #   secret:
+  #   secret_ref:
+  #     name:
+  #     key:
   ##
   ## Additional settings provided in .env file, note that this only works for
   ## versions after commit
