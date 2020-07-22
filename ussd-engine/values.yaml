@@ -20,10 +20,10 @@ config:
     lifetime: 120
 
   # The final base url for platform API access will be built as:
-  #   {{ ushahidi_platform_api.url }}/api/{{ ushahidi_platform_api.version }}/
+  #   {{ ushahidi_platform_api.url }}/api/v{{ ushahidi_platform_api.version }}/
   ushahidi_platform_api:
     url:
-    version: v5
+    version: 5
 
 replicas: 1
 debug: "False"
