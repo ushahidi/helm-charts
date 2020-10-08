@@ -97,6 +97,14 @@ worker:
 mysql:
   ## Set to false to disable
   enabled: true
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    # storageClass:
+    # existingClaim:
+    annotations: {}
+    labels: {}
   limits:
     cpu: "1"
     memory: "1Gi"
