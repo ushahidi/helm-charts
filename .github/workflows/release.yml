@@ -28,5 +28,6 @@ jobs:
         uses: helm/chart-releaser-action@v1.2.0
         with:
           config: cr.yaml
+          charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
