@@ -25,6 +25,11 @@ config:
     url:
     version: 5
 
+  # optional different endpoint for geocoding still via platform API
+  ushahidi_platform_geo_api:
+    url:
+    version: 5
+
 replicas: 1
 debug: "False"
 params:

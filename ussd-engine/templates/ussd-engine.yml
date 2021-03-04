@@ -72,7 +72,13 @@ spec:
         - name: USHAHIDI_PLATFORM_API_URL
           value: {{ .Values.config.ushahidi_platform_api.url | quote }}
         - name: USHAHIDI_PLATFORM_API_VERSION
-          value: {{ .Values.config.ushahidi_platform_api.version | quote }}
+          value: {{ .Values.config.ushahidi_platform_api.version | default "5" |quote }}
+        {{- if .Values.config.ushahidi_platform_geo_api.url  }}
+        - name: USHAHIDI_PLATFORM_GEO_API_URL
+          value: {{ .Values.config.ushahidi_platform_geo_api.url | quote }}
+        - name: USHAHIDI_PLATFORM_GEO_API_VERSION
+          value: {{ .Values.config.ushahidi_platform_geo_api.version | default "5" | quote }}
+        {{- end }}
         - { name: DOCKERIZE_TIMEOUT, value: 180s }
         - name: DOCKERIZE_WAIT_FOR_redis
           value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
