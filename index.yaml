@@ -10,6 +10,14 @@ entries:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-api-0.0.1-alpha.8/ushahidi-platform-api-0.0.1-alpha.8.tgz
     version: 0.0.1-alpha.8
   - apiVersion: v1
+    created: "2021-03-04T12:31:54.715091257Z"
+    digest: 61c1cb5d2442d9dd9d77029a5491cad584c95c8f762ea2a75bdee54559dd1c33
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-platform-api
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-api-0.0.1-alpha.8/ushahidi-platform-api-0.0.1-alpha.8.tgz
+    version: 0.0.1-alpha.8
+  - apiVersion: v1
     created: "2020-10-08T15:39:03.587399+02:00"
     digest: 730cf84816d785c87adf8f34f4925dfdef6243bc84736fc0b26c0f82b062071c
     icon: https://github.ushahidi.org/helm-charts/icon.png
@@ -34,7 +42,23 @@ entries:
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.6/ushahidi-platform-client-0.0.1-alpha.6.tgz
     version: 0.0.1-alpha.6
+  - apiVersion: v1
+    created: "2021-03-04T12:31:54.827417432Z"
+    digest: f3772256ab4addb0b20bf7194d72a383878fc371020dba968faba16f04d22063
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-platform-client
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.6/ushahidi-platform-client-0.0.1-alpha.6.tgz
+    version: 0.0.1-alpha.6
   ushahidi-ussd-engine:
+  - apiVersion: v1
+    created: "2021-03-04T12:31:54.935296381Z"
+    digest: e9f20c7e3974a86bd083ea168c689bc23dfba2a4afe780c36f5a7d5e4f0d5884
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-ussd-engine
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.2/ushahidi-ussd-engine-0.0.1-alpha.2.tgz
+    version: 0.0.1-alpha.2
   - apiVersion: v1
     created: "2020-10-08T15:39:04.218647+02:00"
     digest: 98ae918a3ed00fcae6e312311baa03b975175e11c4c42d98e0b358fd1e71da0f
@@ -43,4 +67,4 @@ entries:
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.1/ushahidi-ussd-engine-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2020-10-08T15:39:03.13484+02:00"
+generated: "2021-03-04T12:31:54.935329881Z"
