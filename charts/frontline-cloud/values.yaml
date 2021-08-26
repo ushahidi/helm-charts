@@ -1,0 +1,51 @@
+config:
+  db:
+    # host: mysql
+    port: 3306
+    database: frontlinesms
+    username: fsms_username
+    password: fsms_password
+
+web:
+  image:
+    repository: mirror.gcr.io
+    name: frontline-cloud
+    tag: latest
+  limits:
+    cpu: "1"
+    memory: "2048Mi"
+  requests:
+    cpu: "10m"
+    memory: "2048Mi"
+  # deployment:
+  #   annotations:
+  ingress:
+    enabled: false
+    # annotations:
+    # tls:
+    # - secretName: domain.example.com
+    #   hosts:
+    #   - domain.example.com
+    host: # domain.example.com
+
+
+# This provides a compatible mysql server
+# Don't rely on it for production.
+mysql:
+  ## Set to false to disable
+  enabled: true
+  persistence:
+    enabled: true   # if this is changed to false, storage may be EPHEMERAL
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    # storageClass:
+    # existingClaim:
+    annotations: {}
+    labels: {}
+  limits:
+    cpu: "1"
+    memory: "512Mi"
+  requests:
+    cpu: "10m"
+    memory: "128Mi"
+
