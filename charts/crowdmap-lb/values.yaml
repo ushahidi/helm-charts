@@ -1,0 +1,22 @@
+image:
+  repository: mirror.gcr.io
+  name: crowdmap-lb
+  tag: latest
+replicas: 1
+limits:
+  cpu: "1"
+  memory: "512Mi"
+requests:
+  cpu: "10m"
+  memory: "128Mi"
+# deployment:
+#   annotations:
+ingress:
+  enabled: false
+  # annotations:
+  # tls:
+  # - secretName: domain.example.com
+  #   hosts:
+  #   - domain.example.com
+  host: # domain.example.com
+
