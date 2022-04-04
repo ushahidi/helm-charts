@@ -99,6 +99,21 @@ spec:
           requests:
             cpu: {{ .Values.requests.cpu }}
             memory: {{ .Values.requests.memory }}
+
+        {{- if .Values.config.settings_file  }}
+        volumeMounts:
+        - name: config-settings-file
+          mountPath: /var/www/
+          subPath: settings.json
+        {{- end }}
+
+      {{- if .Values.config.settings_file }}
+      volumes:
+      - name: config-settings-file
+        configMap:
+          name: ussd-engine-settings
+      {{- end }}
+
       terminationGracePeriodSeconds: 15
 
 ---

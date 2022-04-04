@@ -30,6 +30,15 @@ config:
     url:
     version: 5
 
+  # this maps to the settings.json file
+  # settings_file:
+  #   enabled_languages: []
+  #   enabled_surveys: []
+  #   when_default_values:
+  #     title: ignore
+  #     description: ignore
+  #     other: ignore
+
 replicas: 1
 debug: "False"
 params:

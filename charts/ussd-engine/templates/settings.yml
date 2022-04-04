@@ -1,0 +1,10 @@
+{{- if .Values.config.settings_file }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ussd-engine-settings
+data:
+  settings.json: |-
+{{ toPrettyJson .Values.config.settings_file | indent 4 }}
+{{- end }}
