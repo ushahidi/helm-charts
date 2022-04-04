@@ -103,7 +103,7 @@ spec:
         {{- if .Values.config.settings_file  }}
         volumeMounts:
         - name: config-settings-file
-          mountPath: /var/www/
+          mountPath: /var/www/settings.json
           subPath: settings.json
         {{- end }}
 
