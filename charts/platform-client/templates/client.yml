@@ -42,6 +42,18 @@ spec:
         env:
         - name: BACKEND_URL
           value: {{ .Values.backend_url }}
+        {{- if .Values.config.ga_key }}
+        - name: GA_KEY
+          value: {{ .Values.config.ga_key | quote }}
+        {{- end }}
+        {{- if .Values.config.gtm_container_id }}
+        - name: GTM_CONTAINER_ID
+          value: {{ .Values.config.gtm_container_id | quote }}
+        {{- end }}
+        {{- if .Values.config.intercom_appid }}
+        - name: INTERCOM_APPID
+          value: {{ .Values.config.intercom_appid | quote }}
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api

@@ -1,6 +1,12 @@
 # there is no sensible default for this
 # set to something like https://apihost.example.com
-backend_url: ""   
+backend_url: ""
+
+# other configuration values
+config:
+#  gtm_container_id: 
+#  ga_key:
+#  intercom_appid:
 
 replicas: 1
 limits:
