@@ -3,7 +3,7 @@
 backend_url: ""
 
 # other configuration values
-config:
+config: {}
 #  gtm_container_id: 
 #  ga_key:
 #  intercom_appid:
