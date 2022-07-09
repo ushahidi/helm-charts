@@ -39,6 +39,14 @@ config:
   #     description: ignore
   #     other: ignore
 
+  # this maps to the lang_strings.json file
+  # lang_strings_file:
+  #   en:
+  #     conversation.selectSurvey: Make your pick
+  #   es:
+  #     conversation.selectSurvey: Elija uno
+
+
 replicas: 1
 debug: "False"
 params:

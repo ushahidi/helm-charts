@@ -100,18 +100,32 @@ spec:
             cpu: {{ .Values.requests.cpu }}
             memory: {{ .Values.requests.memory }}
 
-        {{- if .Values.config.settings_file  }}
+        {{- if or .Values.config.settings_file .Values.config.lang_strings_file }}
         volumeMounts:
+        {{- if .Values.config.settings_file  }}
         - name: config-settings-file
           mountPath: /var/www/settings.json
           subPath: settings.json
         {{- end }}
+        {{- if .Values.config.lang_strings_file  }}
+        - name: config-lang-strings-file
+          mountPath: /var/www/lang_strings.json
+          subPath: lang_strings.json
+        {{- end }}
+        {{- end }}
 
-      {{- if .Values.config.settings_file }}
+      {{- if or .Values.config.settings_file .Values.config.lang_strings_file }}
       volumes:
+      {{- if .Values.config.settings_file }}
       - name: config-settings-file
         configMap:
           name: ussd-engine-settings
+      {{- end }}
+      {{- if .Values.config.lang_strings_file }}
+      - name: config-lang-strings-file
+        configMap:
+          name: ussd-engine-lang-strings
+      {{- end }}
       {{- end }}
 
       terminationGracePeriodSeconds: 15

@@ -1,0 +1,10 @@
+{{- if .Values.config.lang_strings_file }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ussd-engine-lang-strings
+data:
+  lang_strings.json: |-
+{{ toPrettyJson .Values.config.lang_strings_file | indent 4 }}
+{{- end }}
