@@ -92,6 +92,18 @@ worker:
   # deployment:
   #   annotations:
 
+crond:
+  ### replicas: 1  --> this is not observed, there must always be just 1 crond
+  debug: "False"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
+  # deployment:
+  #   annotations:
+
 # This provides a compatible mysql server, with EPHEMERAL storage.
 # Don't rely on it for production.
 mysql:

@@ -238,7 +238,7 @@ spec:
     service: api
   type: ClusterIP
 
-
+# Worker deployment (artisan queue)
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -380,7 +380,7 @@ spec:
           value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
         - { name: ENABLE_NGINX, value: "false" }
         - { name: ENABLE_PHPFPM, value: "false" }
-        - { name: ENABLE_PLATFORM_TASKS, value: "true" }
+        - { name: ENABLE_PLATFORM_TASKS, value: "false" }
         - { name: ENABLE_QUEUE_LISTEN, value: "true" }
         - { name: RUN_PLATFORM_MIGRATIONS, value: "false" }
         {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) }}
@@ -414,6 +414,207 @@ spec:
           requests:
             cpu: {{ .Values.worker.requests.cpu }}
             memory: {{ .Values.worker.requests.memory }}
+      {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) (.Values.config.passport_keys_secret) }}
+      volumes:
+      {{- if .Values.config.dotenv  }}
+      - name: config-dotenv-file
+        configMap:
+          name: dotenv
+      {{- end }}
+      {{- if .Values.config.dotenv_secret  }}
+      - name: dotenv-secret
+        secret:
+          secretName: {{ .Values.config.dotenv_secret.name }}
+          items:
+          - key: {{ .Values.config.dotenv_secret.key }}
+            path: .env
+          defaultMode: 0600
+      {{- end }}
+      {{- if .Values.config.passport_keys_secret }}
+      - name: passport-keys
+        secret:
+          secretName: {{ .Values.config.passport_keys_secret }}
+          defaultMode: 0600
+      {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: 15
+
+# crond deployment (re-ocurring jobs)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+{{- if hasKey .Values.crond "deployment" }}
+{{- if .Values.crond.deployment.annotations }}
+  annotations:
+{{ toYaml .Values.crond.deployment.annotations | indent 4 }}
+{{- else }}
+  annotations: {}
+{{- end }}
+{{- end }}
+  labels:
+    app: platform
+    service: crond
+  name: crond
+
+spec:
+  progressDeadlineSeconds: 600
+  minReadySeconds: 5
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform
+      service: crond
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: platform
+        service: crond
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - /entrypoint.CES.sh
+        - start
+        env:
+        - name: APP_KEY
+          {{- if .Values.config.appkey }}
+          value: {{ .Values.config.appkey | quote }}
+          {{ else if .Values.config.appkey_secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.appkey_secret.name }}
+              key: {{ .Values.config.appkey_secret.key }}
+          {{ else }}
+          value: {{ randAlphaNum 32 | quote }}
+          {{- end }}
+        - name: APP_DEBUG
+          value: {{ .Values.api.debug | quote }}
+        - name: APP_TIMEZONE
+          value: {{ .Values.config.timezone }}
+        - name: DB_CONNECTION
+          value: mysql
+        - name: DB_HOST
+          value: {{ .Values.config.db.host }}
+        - name: DB_PORT
+          value: {{ .Values.config.db.port | quote }}
+        - name: DB_DATABASE
+          value: {{ .Values.config.db.database }}
+        - name: DB_USERNAME
+          value: {{ .Values.config.db.username }}
+        - name: DB_PASSWORD
+          {{- if .Values.config.db.password_secret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.db.password_secret.name }}
+              key: {{ .Values.config.db.password_secret.key }}
+          {{- else }}
+          value: {{ .Values.config.db.password | quote }}
+          {{- end }}
+        - name: HDX_URL
+          value: {{ .Values.config.hdx_url | quote }}
+        - name: MAIL_ADDRESS
+          value: {{ .Values.config.mail_from.address | quote }}
+        - name: MAIL_NAME
+          value: {{ .Values.config.mail_from.name | quote }}
+        {{- if .Values.config.smtp_mail }}
+        - name: MAIL_DRIVER
+          value: smtp
+        - name: MAIL_HOST
+          value: {{ .Values.config.smtp_mail.host | quote }}
+        - name: MAIL_PORT
+          value: {{ .Values.config.smtp_mail.port | default "587" | quote }}
+        - name: MAIL_ENCRYPTION
+          value: {{ .Values.config.smtp_mail.encryption | default "tls" | quote }}
+        {{- if .Values.config.smtp_mail.username }}
+        - name: MAIL_USERNAME
+          value: {{ .Values.config.smtp_mail.username | quote }}
+        {{- end }}
+        {{- if .Values.config.smtp_mail.password }}
+        - name: MAIL_PASSWORD
+          value: {{ .Values.config.smtp_mail.password | quote }}
+        {{- end }}
+        {{- if .Values.config.smtp_mail.password_secret }}
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.smtp_mail.password_secret.name }}
+              key: {{ .Values.config.smtp_mail.password_secret.key }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.config.mailgun_mail }}
+        - name: MAIL_DRIVER
+          value: mailgun
+        - name: MAILGUN_DOMAIN
+          value: {{ .Values.config.mailgun_mail.domain | quote }}
+        {{- if .Values.config.mailgun_mail.secret }}
+        - name: MAILGUN_SECRET
+          value: {{ .Values.config.mailgun_mail.secret | quote }}
+        {{- end }}
+        {{- if .Values.config.mailgun_mail.secret_ref }}
+        - name: MAILGUN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.mailgun_mail.secret_ref.name }}
+              key: {{ .Values.config.mailgun_mail.secret_ref.key }}
+        {{- end }}
+        {{- end }}
+        - name: REDIS_HOST
+          value: {{ .Values.config.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.config.redis.port | quote }}
+        - name: CACHE_DRIVER
+          value: {{ .Values.config.drivers.cache }}
+        - name: QUEUE_DRIVER
+          value: {{ .Values.config.drivers.queue }}
+        - name: RATELIMITER_CACHE
+          value: {{ .Values.config.drivers.ratelimiter_cache }}
+        - { name: DOCKERIZE_TIMEOUT, value: 180s }
+        - name: DOCKERIZE_WAIT_FOR_mysql
+          value: "tcp://{{ .Values.config.db.host }}:{{ .Values.config.db.port }}"
+        - name: DOCKERIZE_WAIT_FOR_redis
+          value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
+        - { name: ENABLE_NGINX, value: "false" }
+        - { name: ENABLE_PHPFPM, value: "false" }
+        - { name: ENABLE_PLATFORM_TASKS, value: "true" }
+        - { name: ENABLE_QUEUE_LISTEN, value: "false" }
+        - { name: RUN_PLATFORM_MIGRATIONS, value: "false" }
+        {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) }}
+        - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
+        {{- end }}
+        {{- if .Values.config.passport_keys_secret }}
+        - { name: PASSPORT_KEYS_PATH, value: "/var/www/.cfg/passport" }
+        {{- end }}
+        image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: worker
+        {{- if or (.Values.config.dotenv) (.Values.config.passport_keys_secret) }}
+        volumeMounts:
+        {{- if .Values.config.dotenv }}
+        - name: config-dotenv-file
+          mountPath: /var/www/.cfg/dotenv
+        {{- end }}
+        {{- if .Values.config.dotenv_secret }}
+        - name: dotenv-secret
+          mountPath: /var/www/.cfg/dotenv
+        {{- end }}
+        {{- if .Values.config.passport_keys_secret }}
+        - name: passport-keys
+          mountPath: /var/www/.cfg/passport
+        {{- end }}
+        {{- end }}
+        resources:
+          limits:
+            cpu: {{ .Values.crond.limits.cpu }}
+            memory: {{ .Values.crond.limits.memory }}
+          requests:
+            cpu: {{ .Values.crond.requests.cpu }}
+            memory: {{ .Values.crond.requests.memory }}
       {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) (.Values.config.passport_keys_secret) }}
       volumes:
       {{- if .Values.config.dotenv  }}
