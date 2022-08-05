@@ -26,9 +26,9 @@ config:
     version: 5
 
   # optional different endpoint for geocoding still via platform API
-  ushahidi_platform_geo_api:
-    url:
-    version: 5
+  # ushahidi_platform_geo_api:
+  #   url:
+  #   version: 5
 
   # this maps to the settings.json file
   # settings_file:
@@ -46,6 +46,9 @@ config:
   #   es:
   #     conversation.selectSurvey: Elija uno
 
+  # whatsapp:
+  #   access_token:
+  #   verify_token:
 
 replicas: 1
 debug: "False"
