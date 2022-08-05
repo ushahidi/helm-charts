@@ -103,6 +103,14 @@ entries:
     version: 0.0.1-alpha.6
   ushahidi-ussd-engine:
   - apiVersion: v1
+    created: "2022-08-05T06:42:20.80239081Z"
+    digest: b2a832e8142207dca5f1b74dec017176c01b1f1b70ce16332bea86b37ae37d1a
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-ussd-engine
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.7/ushahidi-ussd-engine-0.0.1-alpha.7.tgz
+    version: 0.0.1-alpha.7
+  - apiVersion: v1
     created: "2022-08-05T06:34:01.523227098Z"
     digest: 2509d4144184ddba5ad58168abbbc7bb9416bf31f99392b775f06d42b540cade
     icon: https://github.ushahidi.org/helm-charts/icon.png
@@ -150,4 +158,4 @@ entries:
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.1/ushahidi-ussd-engine-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2022-08-05T06:34:01.523408499Z"
+generated: "2022-08-05T06:42:20.802466514Z"
