@@ -73,6 +73,10 @@ spec:
           value: {{ .Values.config.ushahidi_platform_api.url | quote }}
         - name: USHAHIDI_PLATFORM_API_VERSION
           value: {{ .Values.config.ushahidi_platform_api.version | default "5" |quote }}
+        {{- if (.Values.config.ushahidi_platform_api).timeout }}
+        - name: USHAHIDI_PLATFORM_API_TIMEOUT
+          value: {{ .Values.config.ushahidi_platform_api.timeout | quote }}
+        {{- end }}
         {{- if (.Values.config.whatsapp).access_token }}
         - name: WHATSAPP_ACCESS_TOKEN
           value: {{ .Values.config.whatsapp.access_token | quote }}

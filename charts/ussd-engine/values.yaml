@@ -24,6 +24,7 @@ config:
   ushahidi_platform_api:
     url:
     version: 5
+    timeout: "2.0"
 
   # optional different endpoint for geocoding still via platform API
   # ushahidi_platform_geo_api:
