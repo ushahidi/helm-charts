@@ -42,15 +42,19 @@ spec:
         env:
         - name: BACKEND_URL
           value: {{ .Values.backend_url }}
-        {{- if .Values.config.ga_key }}
+        {{- if (.Values.config).ga_key }}
         - name: GA_KEY
           value: {{ .Values.config.ga_key | quote }}
         {{- end }}
-        {{- if .Values.config.gtm_container_id }}
+        {{- if (.Values.config).google_maps_api_key }}
+        - name: GOOGLE_MAPS_API_KEY
+          value: {{ .Values.config.google_maps_api_key | quote }}
+        {{- end }}
+        {{- if (.Values.config).gtm_container_id }}
         - name: GTM_CONTAINER_ID
           value: {{ .Values.config.gtm_container_id | quote }}
         {{- end }}
-        {{- if .Values.config.intercom_appid }}
+        {{- if (.Values.config).intercom_appid }}
         - name: INTERCOM_APPID
           value: {{ .Values.config.intercom_appid | quote }}
         {{- end }}

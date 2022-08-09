@@ -5,6 +5,7 @@ backend_url: ""
 # other configuration values
 config: {}
 #  gtm_container_id: 
+#  google_maps_api_key:
 #  ga_key:
 #  intercom_appid:
 
