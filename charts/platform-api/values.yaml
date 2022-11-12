@@ -1,3 +1,6 @@
+minReadySeconds: 10
+progressDeadlineSeconds: 600
+
 image:
   repository: ushahidi
   name: platform

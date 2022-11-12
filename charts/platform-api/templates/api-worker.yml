@@ -27,8 +27,8 @@ metadata:
   name: api
 
 spec:
-  minReadySeconds: 5
-  progressDeadlineSeconds: 600
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
   replicas: {{ .Values.api.replicas }}
   selector:
     matchLabels:
@@ -262,8 +262,8 @@ metadata:
   name: worker
 
 spec:
-  progressDeadlineSeconds: 600
-  minReadySeconds: 5
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
   replicas: {{ .Values.worker.replicas }}
   selector:
     matchLabels:
@@ -463,8 +463,8 @@ metadata:
   name: crond
 
 spec:
-  progressDeadlineSeconds: 600
-  minReadySeconds: 5
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
   replicas: 1
   selector:
     matchLabels:
