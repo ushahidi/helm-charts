@@ -158,7 +158,11 @@ spec:
         - { name: ENABLE_PHPFPM, value: "true" }
         - { name: ENABLE_PLATFORM_TASKS, value: "false" }
         - { name: ENABLE_QUEUE_LISTEN, value: "false" }
+        {{- if not (.Values.config.multisite.enabled | default false) }}
         - { name: RUN_PLATFORM_MIGRATIONS, value: "true" }
+        {{- else }}
+        - { name: RUN_PLATFORM_MIGRATIONS, value: "false" }
+        {{- end }}
         {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) }}
         - { name: DOTENV_PATH, value: "/var/www/.cfg/dotenv/.env" }
         {{- end }}
