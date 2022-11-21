@@ -79,6 +79,14 @@ api:
   requests:
     cpu: "10m"
     memory: "64Mi"
+  startupProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 1
+    failureThreshold: 300
+  livenessProbe:
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    failureThreshold: 1
   # deployment:
   #   annotations:
   ingress:

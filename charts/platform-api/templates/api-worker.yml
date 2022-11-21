@@ -51,8 +51,17 @@ spec:
         - /entrypoint.CES.sh
         - start
         {{- if not (.Values.config.multisite.enabled | default false) }}
+        startupProbe:
+          initialDelaySeconds: {{ .Values.api.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.api.startupProbe.periodSeconds }}
+          failureThreshold: {{ .Values.api.startupProbe.failureThreshold }}
+          httpGet:
+            path: /api/v3/config
+            port: 8080
         livenessProbe:
-          initialDelaySeconds: {{ .Values.minReadySeconds }}
+          initialDelaySeconds: {{ .Values.api.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.api.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.api.livenessProbe.failureThreshold }}
           httpGet:
             path: /api/v3/config
             port: 8080
