@@ -58,6 +58,14 @@ spec:
         - name: INTERCOM_APPID
           value: {{ .Values.config.intercom_appid | quote }}
         {{- end }}
+        {{- if ((.Values.config).multisite).domain }}
+        - name: MULTISITE_DOMAIN
+          value: {{ .Values.config.multisite.domain | quote }}
+        {{- end }}
+        {{- if ((.Values.config).multisite).api_domain }}
+        - name: MULTISITE_API_DOMAIN
+          value: {{ .Values.config.multisite.api_domain | quote }}
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api
