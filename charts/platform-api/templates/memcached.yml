@@ -1,0 +1,66 @@
+{{- if .Values.memcached.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app: platform
+    service: memcached
+  name: memcached
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform
+      service: memcached
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: platform
+        service: memcached
+    spec:
+      containers:
+      - env: []
+        image: memcached:1-alpine
+        imagePullPolicy: Always
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: mysql
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.memcached.limits.cpu }}
+            memory: {{ .Values.memcached.limits.memory }}
+          requests:
+            cpu: {{ .Values.memcached.requests.cpu }}
+            memory: {{ .Values.memcached.requests.memory }}
+      terminationGracePeriodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: platform
+    service: memcached
+  name: memcached
+spec:
+  ports:
+  - name: memcached
+    port: 11211
+    protocol: TCP
+    targetPort: 11211
+  selector:
+    app: platform
+    service: memcached
+  type: ClusterIP
+{{- end }}

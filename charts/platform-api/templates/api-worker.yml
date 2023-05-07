@@ -67,6 +67,8 @@ spec:
             port: 8080
         {{- end }}
         env:
+        - name: APP_ENV
+          value: {{ .Values.config.appenv | quote }}
         - name: APP_KEY
           {{- if .Values.config.appkey }}
           value: {{ .Values.config.appkey | quote }}
@@ -165,7 +167,41 @@ spec:
         - name: DOCKERIZE_WAIT_FOR_redis
           value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
         - name: PHP_EXEC_TIME_LIMIT
-          value: {{ .Values.api.params.php_exec_time_limit | quote }}
+          value: {{ .Values.api.params.php_exec_time_limit | quote }}        
+        {{- if .Values.config.shared_secret }}
+        - name: PLATFORM_SHARED_SECRET
+          value: {{ .Values.config.shared_secret | quote }}
+        {{- end }}
+        {{- if .Values.config.shared_secret_ref }}
+        - name: PLATFORM_SHARED_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.shared_secret_ref.name }}
+              key: {{ .Values.config.shared_secret_ref.key }}
+        {{- end }}
+        {{- if .Values.config.rackspace_filesystem }}
+        - name: FILESYSTEM_DRIVER
+          value: rackspace
+        - name: RS_REGION
+          value: {{ .Values.config.rackspace_filesystem.region | quote }}
+        - name: RS_CONTAINER
+          value: {{ .Values.config.rackspace_filesystem.container | quote }}
+        - name: RS_USERNAME
+          value: {{ .Values.config.rackspace_filesystem.username | quote }}
+        {{- if .Values.config.rackspace_filesystem.apikey }}
+        - name: RS_APIKEY
+          value: {{ .Values.config.rackspace_filesystem.apikey | quote }}
+        {{- end }}
+        {{- if .Values.config.rackspace_filesystem.apikey_secret }}
+        - name: RS_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.rackspace_filesystem.apikey_secret.name }}
+              key: {{ .Values.config.rackspace_filesystem.apikey_secret.key }}
+        {{- end }}
+        {{- end }}
+        # {{- if .Values.config.s3_filesystem }}
+        # {{- end }}
         - { name: ENABLE_NGINX, value: "true" }
         - { name: ENABLE_PHPFPM, value: "true" }
         - { name: ENABLE_PLATFORM_TASKS, value: "false" }
@@ -182,6 +218,19 @@ spec:
         {{- if .Values.config.passport_keys_secret }}
         - { name: PASSPORT_KEYS_PATH, value: "/var/www/.cfg/passport" }
         {{- end }}
+        {{- if .Values.config.ush_analytics_prefix }}
+        - name: USH_ANALYTICS_PREFIX
+          value: {{ .Values.config.ush_analytics_prefix | quote }}
+        {{- end }}
+        {{- if .Values.config.multisite.enabled }}
+        - name: MULTISITE_DOMAIN
+          value: {{ .Values.config.multisite.api_domain | quote }}
+        - name: MULTISITE_CLIENT_DOMAIN
+          value: {{ .Values.config.multisite.domain | quote }}
+        - name: MULTISITE_EMAIL
+          value: {{ .Values.config.multisite.email | quote }}
+        {{- end }}
+
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api
@@ -298,6 +347,8 @@ spec:
         - /entrypoint.CES.sh
         - start
         env:
+        - name: APP_ENV
+          value: {{ .Values.config.appenv | quote }}
         - name: APP_KEY
           {{- if .Values.config.appkey }}
           value: {{ .Values.config.appkey | quote }}
@@ -395,6 +446,40 @@ spec:
           value: "tcp://{{ .Values.config.db.host }}:{{ .Values.config.db.port }}"
         - name: DOCKERIZE_WAIT_FOR_redis
           value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
+        {{- if .Values.config.shared_secret }}
+        - name: PLATFORM_SHARED_SECRET
+          value: {{ .Values.config.shared_secret | quote }}
+        {{- end }}
+        {{- if .Values.config.shared_secret_ref }}
+        - name: PLATFORM_SHARED_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.shared_secret_ref.name }}
+              key: {{ .Values.config.shared_secret_ref.key }}
+        {{- end }}
+        {{- if .Values.config.rackspace_filesystem }}
+        - name: FILESYSTEM_DRIVER
+          value: rackspace
+        - name: RS_REGION
+          value: {{ .Values.config.rackspace_filesystem.region | quote }}
+        - name: RS_CONTAINER
+          value: {{ .Values.config.rackspace_filesystem.container | quote }}
+        - name: RS_USERNAME
+          value: {{ .Values.config.rackspace_filesystem.username | quote }}
+        {{- if .Values.config.rackspace_filesystem.apikey }}
+        - name: RS_APIKEY
+          value: {{ .Values.config.rackspace_filesystem.apikey | quote }}
+        {{- end }}
+        {{- if .Values.config.rackspace_filesystem.apikey_secret }}
+        - name: RS_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.rackspace_filesystem.apikey_secret.name }}
+              key: {{ .Values.config.rackspace_filesystem.apikey_secret.key }}
+        {{- end }}
+        {{- end }}
+        # {{- if .Values.config.s3_filesystem }}
+        # {{- end }}
         - { name: ENABLE_NGINX, value: "false" }
         - { name: ENABLE_PHPFPM, value: "false" }
         - { name: ENABLE_PLATFORM_TASKS, value: "false" }
@@ -411,6 +496,19 @@ spec:
         {{- if .Values.config.passport_keys_secret }}
         - { name: PASSPORT_KEYS_PATH, value: "/var/www/.cfg/passport" }
         {{- end }}
+        {{- if .Values.config.ush_analytics_prefix }}
+        - name: USH_ANALYTICS_PREFIX
+          value: {{ .Values.config.ush_analytics_prefix | quote }}
+        {{- end }}
+        {{- if .Values.config.multisite.enabled }}
+        - name: MULTISITE_DOMAIN
+          value: {{ .Values.config.multisite.api_domain | quote }}
+        - name: MULTISITE_CLIENT_DOMAIN
+          value: {{ .Values.config.multisite.domain | quote }}
+        - name: MULTISITE_EMAIL
+          value: {{ .Values.config.multisite.email | quote }}
+        {{- end }}
+
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: worker
@@ -462,6 +560,8 @@ spec:
       terminationGracePeriodSeconds: 15
 
 # crond deployment (re-ocurring jobs)
+# disabled for multi-site
+{{- if not (.Values.config.multisite.enabled | default false) }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -504,6 +604,8 @@ spec:
         - /entrypoint.CES.sh
         - start
         env:
+        - name: APP_ENV
+          value: {{ .Values.config.appenv | quote }}
         - name: APP_KEY
           {{- if .Values.config.appkey }}
           value: {{ .Values.config.appkey | quote }}
@@ -601,6 +703,40 @@ spec:
           value: "tcp://{{ .Values.config.db.host }}:{{ .Values.config.db.port }}"
         - name: DOCKERIZE_WAIT_FOR_redis
           value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
+        {{- if .Values.config.shared_secret }}
+        - name: PLATFORM_SHARED_SECRET
+          value: {{ .Values.config.shared_secret | quote }}
+        {{- end }}
+        {{- if .Values.config.shared_secret_ref }}
+        - name: PLATFORM_SHARED_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.shared_secret_ref.name }}
+              key: {{ .Values.config.shared_secret_ref.key }}
+        {{- end }}
+        {{- if .Values.config.rackspace_filesystem }}
+        - name: FILESYSTEM_DRIVER
+          value: rackspace
+        - name: RS_REGION
+          value: {{ .Values.config.rackspace_filesystem.region | quote }}
+        - name: RS_CONTAINER
+          value: {{ .Values.config.rackspace_filesystem.container | quote }}
+        - name: RS_USERNAME
+          value: {{ .Values.config.rackspace_filesystem.username | quote }}
+        {{- if .Values.config.rackspace_filesystem.apikey }}
+        - name: RS_APIKEY
+          value: {{ .Values.config.rackspace_filesystem.apikey | quote }}
+        {{- end }}
+        {{- if .Values.config.rackspace_filesystem.apikey_secret }}
+        - name: RS_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.config.rackspace_filesystem.apikey_secret.name }}
+              key: {{ .Values.config.rackspace_filesystem.apikey_secret.key }}
+        {{- end }}
+        {{- end }}
+        # {{- if .Values.config.s3_filesystem }}
+        # {{- end }}
         - { name: ENABLE_NGINX, value: "false" }
         - { name: ENABLE_PHPFPM, value: "false" }
         - { name: ENABLE_PLATFORM_TASKS, value: "true" }
@@ -612,6 +748,11 @@ spec:
         {{- if .Values.config.passport_keys_secret }}
         - { name: PASSPORT_KEYS_PATH, value: "/var/www/.cfg/passport" }
         {{- end }}
+        {{- if .Values.config.ush_analytics_prefix }}
+        - name: USH_ANALYTICS_PREFIX
+          value: {{ .Values.config.ush_analytics_prefix | quote }}
+        {{- end }}
+
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: worker
@@ -661,6 +802,7 @@ spec:
       {{- end }}
       {{- end }}
       terminationGracePeriodSeconds: 15
+{{- end }}
 
 {{- if .Values.api.ingress.enabled }}
 ---
