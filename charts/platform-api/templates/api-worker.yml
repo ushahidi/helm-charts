@@ -155,6 +155,10 @@ spec:
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
           value: {{ .Values.config.redis.port | quote }}
+        - name: MEMCACHED_HOST
+          value: {{ .Values.config.memcached.host | quote }}
+        - name: MEMCACHED_PORT
+          value: {{ .Values.config.memcached.port | quote }}
         - name: CACHE_DRIVER
           value: {{ .Values.config.drivers.cache }}
         - name: QUEUE_DRIVER
@@ -435,6 +439,10 @@ spec:
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
           value: {{ .Values.config.redis.port | quote }}
+        - name: MEMCACHED_HOST
+          value: {{ .Values.config.memcached.host | quote }}
+        - name: MEMCACHED_PORT
+          value: {{ .Values.config.memcached.port | quote }}
         - name: CACHE_DRIVER
           value: {{ .Values.config.drivers.cache }}
         - name: QUEUE_DRIVER
@@ -692,6 +700,10 @@ spec:
           value: {{ .Values.config.redis.host }}
         - name: REDIS_PORT
           value: {{ .Values.config.redis.port | quote }}
+        - name: MEMCACHED_HOST
+          value: {{ .Values.config.memcached.host | quote }}
+        - name: MEMCACHED_PORT
+          value: {{ .Values.config.memcached.port | quote }}
         - name: CACHE_DRIVER
           value: {{ .Values.config.drivers.cache }}
         - name: QUEUE_DRIVER
