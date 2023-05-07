@@ -96,6 +96,9 @@ config:
   #     name:
   #     key:
 
+  # sentry:
+  #   dsn:
+  #   # environment:
 
   ##
   ## Additional settings provided in .env file, note that this only works for

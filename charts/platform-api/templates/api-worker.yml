@@ -204,6 +204,16 @@ spec:
               key: {{ .Values.config.rackspace_filesystem.apikey_secret.key }}
         {{- end }}
         {{- end }}
+        {{- if .Values.config.sentry.dsn }}
+        - name: SENTRY_DSN
+          value: {{ .Values.config.sentry.dsn | quote }}
+        - name: SENTRY_ENVIRONMENT
+        {{- if .Values.config.sentry.environment }}
+          value: {{ .Values.config.sentry.environment | quote }}
+        {{- else }}
+          value: {{ .Values.config.appenv | quote }}
+        {{- end }}
+        {{- end }}
         # {{- if .Values.config.s3_filesystem }}
         # {{- end }}
         - { name: ENABLE_NGINX, value: "true" }
@@ -486,6 +496,16 @@ spec:
               key: {{ .Values.config.rackspace_filesystem.apikey_secret.key }}
         {{- end }}
         {{- end }}
+        {{- if .Values.config.sentry.dsn }}
+        - name: SENTRY_DSN
+          value: {{ .Values.config.sentry.dsn | quote }}
+        - name: SENTRY_ENVIRONMENT
+        {{- if .Values.config.sentry.environment }}
+          value: {{ .Values.config.sentry.environment | quote }}
+        {{- else }}
+          value: {{ .Values.config.appenv | quote }}
+        {{- end }}
+        {{- end }}
         # {{- if .Values.config.s3_filesystem }}
         # {{- end }}
         - { name: ENABLE_NGINX, value: "false" }
@@ -745,6 +765,16 @@ spec:
             secretKeyRef:
               name: {{ .Values.config.rackspace_filesystem.apikey_secret.name }}
               key: {{ .Values.config.rackspace_filesystem.apikey_secret.key }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.config.sentry.dsn }}
+        - name: SENTRY_DSN
+          value: {{ .Values.config.sentry.dsn | quote }}
+        - name: SENTRY_ENVIRONMENT
+        {{- if .Values.config.sentry.environment }}
+          value: {{ .Values.config.sentry.environment | quote }}
+        {{- else }}
+          value: {{ .Values.config.appenv | quote }}
         {{- end }}
         {{- end }}
         # {{- if .Values.config.s3_filesystem }}
