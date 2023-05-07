@@ -66,6 +66,18 @@ spec:
         - name: MULTISITE_API_DOMAIN
           value: {{ .Values.config.multisite.api_domain | quote }}
         {{- end }}
+        {{- if (.Values.config.sentry).dsn }}
+        - name: SENTRY_DSN
+          value: {{ .Values.config.sentry.dsn | quote }}
+        {{- end }}
+        {{- if (.Values.config.sentry).environment }}
+        - name: SENTRY_ENVIRONMENT
+          value: {{ .Values.config.sentry.environment | quote }}
+        {{- end }}
+        {{- if (.Values.config.sentry).debug_mode }}
+        - name: SENTRY_DEBUG_MODE
+          value: {{ .Values.config.sentry.debug_mode | quote }}
+        {{- end }}
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: api

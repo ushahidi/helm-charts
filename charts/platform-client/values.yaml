@@ -11,6 +11,10 @@ config: {}
 #  multisite:   # (platform-client-mzima images only)
 #    domain:
 #    api_domain:
+#  sentry:
+#    dsn:
+#    environment:
+#    # debug_mode:
 
 replicas: 1
 limits:
