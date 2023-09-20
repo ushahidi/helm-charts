@@ -1,0 +1,51 @@
+minReadySeconds: 60
+image:
+  tag: project-mzima
+config:
+  appenv: production
+  timzone: UTC
+  multisite:
+    enabled: true
+    domain: ushahidi.io
+    api_domain: api.ushahidi.io
+    email: support@ushahidi.com
+  drivers:
+    cache: memcached
+    ratelimiter_cache: memcached
+  mail_from:
+    address: support@ushahidi.com
+    name: "Platform Deployment Admin"
+  redis:
+    host: production-redis.ujenic.0001.euw1.cache.amazonaws.com
+    port: 6379
+  mailgun_mail:
+    domain: mg.ushahidi.com
+    secret: abcdef
+    # -> secret_ref
+  rackspace_filesystem:
+    region: ORD
+    container: platform-cloud
+    username: ushahidi.api
+    apikey: cdefghi
+    # -> apikey_secret
+
+api:
+  replicas: 2
+  limits:
+    cpu: "1"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "512Mi"
+  ingress:
+    host: io-test-api.staging.ush.zone # later: "*.api.ushahidi.io"
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: io-test-1.staging.ush.zone   # ensure we control this
+worker:
+  replicas: 0   # this will still run on the old infra for now
+mysql:
+  enabled: false
+redis:
+  enabled: false
+memcached:
+  enabled: true

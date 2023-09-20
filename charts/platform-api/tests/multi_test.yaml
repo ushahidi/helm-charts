@@ -1,0 +1,15 @@
+# # yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: simple test
+templates:
+- templates/api-worker.yaml
+- templates/memcached.yaml
+
+tests:
+- it: api should work
+  values:
+  - ./values/simple.yaml
+  template: templates/api.yaml
+  asserts:
+  - equal:
+      path: metadata.name
+      value: api
