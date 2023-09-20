@@ -173,9 +173,9 @@ spec:
         - name: PHP_EXEC_TIME_LIMIT
           value: {{ .Values.api.params.php_exec_time_limit | quote }}
         - name: PHP_UPLOAD_MAX_FILESIZE
-          value: {{ .Values.api.params.php_upload_max_filesize | quote }}
+          value: {{ .Values.api.params.upload_max_filesize | quote }}
         - name: PHP_POST_MAX_SIZE
-          value: {{ .Values.api.params.php_upload_max_filesize | quote }}
+          value: {{ .Values.api.params.upload_max_filesize | quote }}
         {{- if .Values.config.shared_secret }}
         - name: PLATFORM_SHARED_SECRET
           value: {{ .Values.config.shared_secret | quote }}
