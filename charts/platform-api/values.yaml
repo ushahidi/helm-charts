@@ -117,6 +117,7 @@ api:
   debug: "False"
   params:
     php_exec_time_limit: 60
+    upload_max_filesize: 2m
   limits:
     cpu: "1"
     memory: "1Gi"
