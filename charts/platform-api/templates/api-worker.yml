@@ -176,7 +176,7 @@ spec:
           value: {{ .Values.api.params.upload_max_filesize | quote }}
         - name: PHP_POST_MAX_SIZE
           value: {{ .Values.api.params.upload_max_filesize | quote }}
-        - name: MEDIA_MAX_UPLOAD
+        - name: IMAGE_MAX_SIZE
           value: {{ .Values.api.params.media_max_upload | quote }}
         {{- if .Values.config.shared_secret }}
         - name: PLATFORM_SHARED_SECRET

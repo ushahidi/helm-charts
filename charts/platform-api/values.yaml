@@ -117,8 +117,8 @@ api:
   debug: "False"
   params:
     php_exec_time_limit: 60
-    upload_max_filesize: 2m
-    media_max_upload: '2000000'
+    upload_max_filesize: 2m     # this should match the value below with units
+    image_max_size: '2000000'   # this should match the previous value but in bytes
   limits:
     cpu: "1"
     memory: "1Gi"
