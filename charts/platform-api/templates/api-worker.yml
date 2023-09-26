@@ -172,6 +172,18 @@ spec:
           value: "tcp://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}"
         - name: PHP_EXEC_TIME_LIMIT
           value: {{ .Values.api.params.php_exec_time_limit | quote }}
+        - name: PHPFPM_PM_MAX_CHILDREN
+          value: {{ .Values.api.params.phpfpm_pm_max_children | quote }}
+        - name: PHPFPM_PM_START_SERVERS
+          value: {{ .Values.api.params.phpfpm_pm_start_servers | quote }}
+        - name: PHPFPM_PM_MIN_SPARE_SERVERS
+          value: {{ .Values.api.params.phpfpm_pm_min_spare_servers | quote }}
+        - name: PHPFPM_PM_MAX_SPARE_SERVERS
+          value: {{ .Values.api.params.phpfpm_pm_max_spare_servers | quote }}
+        - name: PHPFPM_PM_PROCESS_IDLE_TIMEOUT
+          value: {{ .Values.api.params.phpfpm_pm_process_idle_timeout | quote }}
+        - name: PHPFPM_PM_MAX_REQUESTS
+          value: {{ .Values.api.params.phpfpm_pm_max_requests | quote }}
         - name: PHP_UPLOAD_MAX_FILESIZE
           value: {{ .Values.api.params.upload_max_filesize | quote }}
         - name: PHP_POST_MAX_SIZE

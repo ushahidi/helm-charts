@@ -117,6 +117,12 @@ api:
   debug: "False"
   params:
     php_exec_time_limit: 60
+    phpfpm_pm_max_children: 5
+    phpfpm_pm_start_servers: 2
+    phpfpm_pm_min_spare_servers: 1
+    phpfpm_pm_max_spare_servers: 3
+    phpfpm_pm_process_idle_timeout: "10s"
+    phpfpm_pm_max_requests: 500
     upload_max_filesize: 2m     # this should match the value below with units
     image_max_size: '2000000'   # this should match the previous value but in bytes
   limits:
