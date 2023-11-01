@@ -96,9 +96,9 @@ config:
   #     name:
   #     key:
 
-  # sentry:
-  #   dsn:
-  #   # environment:
+  sentry:
+    dsn:
+    # environment:
 
   ##
   ## Additional settings provided in .env file, note that this only works for
@@ -149,6 +149,8 @@ api:
     #   hosts:
     #   - domain.example.com
     host: # domain.example.com
+    # aliases:
+    #   -
 
 worker:
   replicas: 1

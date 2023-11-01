@@ -133,6 +133,19 @@ spec:
         backend:
           serviceName: client
           servicePort: http
+
+{{- if .Values.ingress.aliases -}}
+{{- range .Values.ingress.aliases }}
+  - host: {{ . | quote }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: client
+          servicePort: http
+{{- end -}}
+{{- end -}}
+
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}

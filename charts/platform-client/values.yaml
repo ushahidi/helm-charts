@@ -33,6 +33,8 @@ ingress:
   #   hosts:
   #   - domain.example.com
   host: # domain.example.com
+  # aliases:
+  #  -
 
 image:
   repository: ushahidi
