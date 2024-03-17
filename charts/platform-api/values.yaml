@@ -181,6 +181,10 @@ crond:
 mysql:
   ## Set to false to disable
   enabled: true
+  image:
+    repository: ""
+    name: mysql
+    tag: 5.7
   persistence:
     enabled: true
     accessMode: ReadWriteOnce

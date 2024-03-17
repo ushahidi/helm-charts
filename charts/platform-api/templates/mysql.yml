@@ -59,7 +59,9 @@ spec:
           value: ushahidi
         - name: MYSQL_PASSWORD
           value: ushahidi
-        image: mysql:5.7
+        {{- with .Values.mysql.image }}
+        image: {{ empty .repository | ternary "" (print .repository "/") }}{{ .name }}:{{ .tag }}
+        {{- end }}
         imagePullPolicy: Always
         name: mysql
         ports:
