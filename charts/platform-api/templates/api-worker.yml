@@ -883,8 +883,10 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: api
-          servicePort: http
+          service:
+            name: api
+          port:
+            name: http
 {{- if .Values.api.ingress.aliases -}}
 {{- range .Values.api.ingress.aliases }}
   - host: {{ . | quote }}
@@ -892,8 +894,10 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: client
-          servicePort: http
+          service:
+            name: client
+          port: 
+            name: http
 {{- end -}}
 {{- end -}}
 

@@ -131,8 +131,10 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: client
-          servicePort: http
+          service:
+            name: client
+          port:
+            name: http
 
 {{- if .Values.ingress.aliases -}}
 {{- range .Values.ingress.aliases }}
@@ -141,8 +143,10 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: client
-          servicePort: http
+          service:
+            name: client
+          port:
+            name: http
 {{- end -}}
 {{- end -}}
 
