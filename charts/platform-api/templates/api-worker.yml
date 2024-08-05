@@ -866,7 +866,7 @@ spec:
 
 {{- if .Values.api.ingress.enabled }}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
 {{- if .Values.api.ingress.annotations }}

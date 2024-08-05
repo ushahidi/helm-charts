@@ -38,7 +38,10 @@ api:
     cpu: "100m"
     memory: "512Mi"
   ingress:
-    host: io-test-api.staging.ush.zone # later: "*.api.ushahidi.io"
+    enabled: true
+    host: io-test-api.staging.ush.zone
+    aliases:
+      - '*.api.ushahidi.io'
     annotations:
       external-dns.alpha.kubernetes.io/hostname: io-test-1.staging.ush.zone   # ensure we control this
 worker:
