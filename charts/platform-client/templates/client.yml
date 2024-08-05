@@ -134,8 +134,8 @@ spec:
         backend:
           service:
             name: client
-          port:
-            name: http
+            port:
+              name: http
 
 {{- if .Values.ingress.aliases -}}
 {{- range .Values.ingress.aliases }}

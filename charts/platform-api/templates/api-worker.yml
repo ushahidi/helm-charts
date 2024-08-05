@@ -886,8 +886,8 @@ spec:
         backend:
           service:
             name: api
-          port:
-            name: http
+            port:
+              name: http
 {{- if .Values.api.ingress.aliases -}}
 {{- range .Values.api.ingress.aliases }}
   - host: {{ . | quote }}
@@ -897,8 +897,8 @@ spec:
         backend:
           service:
             name: client
-          port: 
-            name: http
+            port: 
+              name: http
 {{- end -}}
 {{- end -}}
 
