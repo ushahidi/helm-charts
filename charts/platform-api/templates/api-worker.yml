@@ -882,7 +882,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: api
@@ -894,9 +894,10 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
           service:
-            name: client
+            name: api
             port: 
               name: http
 {{- end -}}
