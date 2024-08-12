@@ -29,6 +29,14 @@ entries:
     version: 0.0.1-alpha.1
   ushahidi-platform-api:
   - apiVersion: v1
+    created: "2024-08-12T16:35:37.924040336Z"
+    digest: 6f11dc5f28a4ae52b50f7de211f71ffd6f4e867a51378037096e8c7e6c65db04
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-platform-api
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-api-0.0.1-alpha.30/ushahidi-platform-api-0.0.1-alpha.30.tgz
+    version: 0.0.1-alpha.30
+  - apiVersion: v1
     created: "2024-08-05T13:11:27.774144597Z"
     digest: 5b5140fc5691fba9cad2fd159ad7bcc7dd875fbe19f88acb38eeb735487c66d1
     icon: https://github.ushahidi.org/helm-charts/icon.png
@@ -230,6 +238,14 @@ entries:
     version: 0.0.1-alpha.6
   ushahidi-platform-client:
   - apiVersion: v1
+    created: "2024-08-12T16:35:38.05115713Z"
+    digest: f117022e4c8f055e403d2bdb31bda39ed1a9cf7bee5bba43dd25922d4d7d32a6
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-platform-client
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.17/ushahidi-platform-client-0.0.1-alpha.17.tgz
+    version: 0.0.1-alpha.17
+  - apiVersion: v1
     created: "2024-08-05T13:11:27.877794973Z"
     digest: debc4098a17dd797e49e41269c2d740c186586a99f4e23e339574f90df867e87
     icon: https://github.ushahidi.org/helm-charts/icon.png
@@ -390,4 +406,4 @@ entries:
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.1/ushahidi-ussd-engine-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2024-08-05T13:11:27.878286912Z"
+generated: "2024-08-12T16:35:38.051694981Z"
