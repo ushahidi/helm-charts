@@ -254,6 +254,9 @@ spec:
         - name: USH_ANALYTICS_PREFIX
           value: {{ .Values.config.ush_analytics_prefix | quote }}
         {{- end }}
+        {{- /* This is a temporary fix while the container is running as root */}}
+        - name: COMPOSER_ALLOW_SUPERUSER
+          value: "1"
         {{- if .Values.config.multisite.enabled }}
         - name: MULTISITE_DOMAIN
           value: {{ .Values.config.multisite.api_domain | quote }}
@@ -546,6 +549,9 @@ spec:
         - name: USH_ANALYTICS_PREFIX
           value: {{ .Values.config.ush_analytics_prefix | quote }}
         {{- end }}
+        {{- /* This is a temporary fix while the container is running as root */}}
+        - name: COMPOSER_ALLOW_SUPERUSER
+          value: "1"
         {{- if .Values.config.multisite.enabled }}
         - name: MULTISITE_DOMAIN
           value: {{ .Values.config.multisite.api_domain | quote }}
@@ -812,6 +818,9 @@ spec:
         - name: USH_ANALYTICS_PREFIX
           value: {{ .Values.config.ush_analytics_prefix | quote }}
         {{- end }}
+        {{- /* This is a temporary fix while the container is running as root */}}
+        - name: COMPOSER_ALLOW_SUPERUSER
+          value: "1"
 
         image: {{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
