@@ -129,6 +129,9 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.mysql.persistence.accessMode | quote }}
+{{- if .Values.mysql.persistence.volumeName }}
+  volumeName: {{ .Values.mysql.persistence.volumeName | quote }}
+{{- end }}
   resources:
     requests:
       storage: {{ .Values.mysql.persistence.size | quote }}

@@ -189,6 +189,7 @@ mysql:
     enabled: true
     accessMode: ReadWriteOnce
     size: 8Gi
+    # volumeName:
     # storageClass:
     # existingClaim:
     annotations: {}
