@@ -29,7 +29,9 @@ spec:
     spec:
       containers:
       - env: []
-        image: redis:4-alpine
+        {{- with .Values.redis.image }}
+        image: {{ empty .repository | ternary "" (print .repository "/") }}{{ .name }}:{{ .tag }}
+        {{- end }}
         imagePullPolicy: Always
         name: redis
         ports:

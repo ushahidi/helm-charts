@@ -206,6 +206,10 @@ mysql:
 redis:
   ## Set to false to disable
   enabled: true
+  image:
+    repository: ""
+    name: redis
+    tag: 4-alpine
   limits:
     cpu: "1"
     memory: "1Gi"
