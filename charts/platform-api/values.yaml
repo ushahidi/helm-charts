@@ -131,6 +131,12 @@ api:
   requests:
     cpu: "10m"
     memory: "64Mi"
+  # tolerations:
+  # - effect: NoSchedule
+  #   key: requires-label-match
+  #   operator: Exists
+  # nodeSelector:
+  #   node-group: "1core-perf"
   startupProbe:
     initialDelaySeconds: 5
     periodSeconds: 1

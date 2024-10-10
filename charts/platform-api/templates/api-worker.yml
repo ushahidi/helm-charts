@@ -295,6 +295,14 @@ spec:
           requests:
             cpu: {{ .Values.api.requests.cpu }}
             memory: {{ .Values.api.requests.memory }}
+        {{- if .Values.api.tolerations }}
+        tolerations:
+{{ toYaml .Values.api.tolerations | indent 10 }}
+        {{- end }}
+        {{- if .Values.api.nodeSelector }}
+        nodeSelector:
+{{ toYaml .Values.api.nodeSelector | indent 10 }}
+        {{- end }}
       {{- if or (.Values.config.dotenv) (.Values.config.dotenv_secret) (.Values.config.passport_keys_secret) }}
       volumes:
       {{- if .Values.config.dotenv  }}
