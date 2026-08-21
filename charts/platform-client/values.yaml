@@ -6,6 +6,7 @@ backend_url: ""
 config: {}
 #  gtm_container_id: 
 #  google_maps_api_key:
+#  mapbox_api_key:
 #  ga_key:
 #  intercom_appid:
 #  multisite:   # (platform-client-mzima images only)
