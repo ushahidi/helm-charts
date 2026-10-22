@@ -1,0 +1,161 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: platform cloud interface
+templates:
+- templates/api.yaml
+- templates/web.yaml
+- templates/migrations-job.yaml
+tests:
+- it: names resources so they can share a namespace with the platform charts
+  values: [./values/minimal.yaml]
+  template: templates/api.yaml
+  asserts:
+  - containsDocument: {kind: Deployment, apiVersion: apps/v1, name: cloud-interface-api, any: true}
+  - containsDocument: {kind: Service, apiVersion: v1, name: cloud-interface-api, any: true}
+  - hasDocuments: {count: 2}
+
+- it: uses the ECR images with the given tag
+  values: [./values/full.yaml]
+  template: templates/web.yaml
+  documentIndex: 0
+  asserts:
+  - equal:
+      path: spec.template.spec.containers[0].image
+      value: 513259414768.dkr.ecr.eu-west-1.amazonaws.com/platform-cloud-interface-web:v2026.43.0
+
+- it: api pods wait for migrations, which run in a pre-install/upgrade hook job
+  values: [./values/minimal.yaml]
+  asserts:
+  - template: templates/api.yaml
+    documentIndex: 0
+    contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: RUN_DATABASE_MIGRATIONS, value: "false"}
+  - template: templates/migrations-job.yaml
+    equal:
+      path: metadata.annotations["helm.sh/hook"]
+      value: pre-install,pre-upgrade
+  - template: templates/migrations-job.yaml
+    contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: RUN_DATABASE_MIGRATIONS, value: "true"}
+  - template: templates/migrations-job.yaml
+    equal:
+      path: spec.template.spec.containers[0].command
+      value: [/bin/bash, /init.dockerize.sh, /run.run.sh, "true"]
+
+- it: can leave migrations to someone else
+  values: [./values/minimal.yaml]
+  set:
+    migrations.enabled: false
+  template: templates/migrations-job.yaml
+  asserts:
+  - hasDocuments: {count: 0}
+
+- it: takes credentials from secrets
+  values: [./values/full.yaml]
+  template: templates/api.yaml
+  documentIndex: 0
+  asserts:
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: APP_KEY
+        valueFrom: {secretKeyRef: {name: cloud-interface-config, key: APP_KEY}}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: DB_PASSWORD
+        valueFrom: {secretKeyRef: {name: cloud-interface-config, key: DB_PASSWORD}}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: DOCKERINIT_CLOUDAPI_SECRET
+        valueFrom: {secretKeyRef: {name: cloud-interface-config, key: CLOUDAPI_SECRET}}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: CLOUD_AMQP_PASSWORD
+        valueFrom: {secretKeyRef: {name: cloud-interface-config, key: AMQP_PASSWORD}}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content:
+        name: CLOUD_CHARGEBEE_APIKEY
+        valueFrom: {secretKeyRef: {name: cloud-interface-config, key: CHARGEBEE_APIKEY}}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUD_DEFAULT_DB_HOST, value: deployments-db.example}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUD_DEPLOYMENTS_DB_PREFIX, value: stg_}
+  - equal:
+      path: metadata.annotations["keel.sh/policy"]
+      value: force
+
+- it: leaves out amqp and chargebee when not configured
+  values: [./values/minimal.yaml]
+  template: templates/api.yaml
+  documentIndex: 0
+  asserts:
+  - notContains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUD_AMQP_URL, value: ""}
+      any: true
+  - notContains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUD_CHARGEBEE_SUBDOMAIN}
+      any: true
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUD_DEFAULT_DB_HOST, value: mysql}
+
+- it: points the web app at the api service and shares the oauth client
+  values: [./values/minimal.yaml]
+  template: templates/web.yaml
+  documentIndex: 0
+  asserts:
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUDAPI_URL, value: "http://cloud-interface-api"}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUDAPI_CLIENT, value: webapp}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: CLOUDAPI_SECRET, value: oauthsecret}
+  - contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: SESSION_DRIVER, value: redis}
+
+- it: web ingress covers aliases and tls
+  values: [./values/full.yaml]
+  template: templates/web.yaml
+  documentIndex: 2
+  asserts:
+  - isKind: {of: Ingress}
+  - equal: {path: "spec.rules[0].host", value: example.com}
+  - equal: {path: "spec.rules[1].host", value: www.example.com}
+  - equal: {path: "spec.rules[1].http.paths[0].backend.service.name", value: cloud-interface-web}
+  - equal: {path: "spec.tls[0].secretName", value: example-tls}
+  - notExists: {path: "spec.ingressClassName"}
+
+- it: api ingress uses the class given
+  values: [./values/full.yaml]
+  template: templates/api.yaml
+  documentIndex: 2
+  asserts:
+  - equal: {path: "spec.ingressClassName", value: nginx}
+  - equal: {path: "spec.rules[0].host", value: api.example.com}
+
+- it: requires an app key
+  set:
+    config.oauth_client.secret: x
+  template: templates/web.yaml
+  asserts:
+  - failedTemplate: {errorMessage: config.appkey or config.appkey_secret is required}
+
+- it: requires the oauth client secret
+  set:
+    config.appkey: abcdefghijklmnopqrstuvwxyz012345
+  template: templates/web.yaml
+  asserts:
+  - failedTemplate: {errorMessage: config.oauth_client.secret or config.oauth_client.secret_secret is required}

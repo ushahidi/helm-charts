@@ -1,0 +1,39 @@
+image:
+  tag: v2026.43.0
+config:
+  appkey_secret: {name: cloud-interface-config, key: APP_KEY}
+  oauth_client:
+    secret_secret: {name: cloud-interface-config, key: CLOUDAPI_SECRET}
+  db:
+    host: db.example
+    password_secret: {name: cloud-interface-config, key: DB_PASSWORD}
+  deployments:
+    db_host: deployments-db.example
+    db_prefix: stg_
+  amqp:
+    host: rabbitmq.example
+    username: platform
+    password_secret: {name: cloud-interface-config, key: AMQP_PASSWORD}
+  chargebee:
+    subdomain: ushahidi-test
+    apikey_secret: {name: cloud-interface-config, key: CHARGEBEE_APIKEY}
+  sentry:
+    dsn: https://key@sentry.example/1
+  analytics:
+    gtm_container_id: GTM-TEST
+api:
+  deployment:
+    annotations:
+      keel.sh/policy: force
+  ingress:
+    enabled: true
+    className: nginx
+    host: api.example.com
+web:
+  ingress:
+    enabled: true
+    host: example.com
+    aliases: [www.example.com]
+    tls:
+    - secretName: example-tls
+      hosts: [example.com, www.example.com]

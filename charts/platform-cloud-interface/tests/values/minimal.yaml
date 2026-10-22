@@ -1,0 +1,4 @@
+config:
+  appkey: abcdefghijklmnopqrstuvwxyz012345
+  oauth_client:
+    secret: oauthsecret

@@ -1,0 +1,99 @@
+{{- $name := include "pci.apiName" . -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    app: platform-cloud-interface
+    service: api
+{{- with (.Values.api.deployment | default dict).annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app: platform-cloud-interface
+      service: api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: platform-cloud-interface
+        service: api
+    spec:
+      containers:
+      - name: api
+        image: {{ include "pci.image" (dict "Values" .Values "component" .Values.image.api) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /bin/bash
+        - /entrypoint.CES.sh
+        - start
+        env:
+{{ include "pci.apiEnv" . | indent 8 }}
+        # migrations run in the migrations job; until they're applied the
+        # container waits instead of starting
+        - name: RUN_DATABASE_MIGRATIONS
+          value: "false"
+        ports:
+        - name: http
+          containerPort: 8080
+        startupProbe:
+          initialDelaySeconds: {{ .Values.api.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.api.startupProbe.periodSeconds }}
+          failureThreshold: {{ .Values.api.startupProbe.failureThreshold }}
+          httpGet:
+            path: /tiers
+            port: http
+        livenessProbe:
+          periodSeconds: {{ .Values.api.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.api.livenessProbe.failureThreshold }}
+          tcpSocket:
+            port: http
+        readinessProbe:
+          periodSeconds: {{ .Values.api.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.api.readinessProbe.failureThreshold }}
+          httpGet:
+            path: /tiers
+            port: http
+        resources:
+          limits:
+{{ toYaml .Values.api.limits | indent 12 }}
+          requests:
+{{ toYaml .Values.api.requests | indent 12 }}
+{{- with .Values.api.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+{{- end }}
+{{- with .Values.api.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    app: platform-cloud-interface
+    service: api
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: platform-cloud-interface
+    service: api
+{{ include "pci.ingress" (dict "name" $name "service" "api" "component" .Values.api) }}
