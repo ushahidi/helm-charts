@@ -1,0 +1,192 @@
+# Resources are named "<name>-api" and "<name>-web", so the chart can share a
+# namespace with the platform api and client charts
+name: cloud-interface
+
+minReadySeconds: 10
+progressDeadlineSeconds: 600
+
+image:
+  repository: 513259414768.dkr.ecr.eu-west-1.amazonaws.com
+  api:
+    name: platform-cloud-interface-api
+  web:
+    name: platform-cloud-interface-web
+  tag: master
+  pullPolicy: Always
+
+config:
+  appenv: production
+  locale: en
+
+  # -- Lumen 5.1 needs exactly 32 characters. One of these is required, the
+  # key must be stable (it encrypts the web app's cookies)
+  # appkey:
+  # appkey_secret:
+  #   name:
+  #   key:
+
+  # -- domain deployments are created under, i.e. ushahidi.io
+  domain: ushahidi.io
+  # -- domain recorded for deployments' APIs, i.e. api.ushahidi.io
+  api_domain: api.ushahidi.io
+  # -- tier for new deployments that don't ask for one
+  default_tier: level_1
+
+  # -- cloud database (deployments, tiers, oauth clients)
+  db:
+    host: mysql
+    port: 3306
+    database: cloud
+    username: cloud
+    # password:
+    # password_secret:
+    #   name:
+    #   key:
+
+  # -- database settings handed to newly created deployments
+  deployments:
+    # db_host: defaults to config.db.host
+    # db_host_replica:
+    # db_prefix: cloud_
+
+  # -- oauth client the web app uses to call the api. The api creates/updates
+  # it when migrations run
+  oauth_client:
+    id: webapp
+    # secret:
+    # secret_secret:
+    #   name:
+    #   key:
+
+  # -- RabbitMQ for the platform-job-queue (Celery) workers. Without it,
+  # deployments are created but marked failed
+  amqp: {}
+    # host:
+    # port: 5672
+    # username:
+    # password:
+    # password_secret:
+    #   name:
+    #   key:
+
+  chargebee: {}
+    # subdomain:
+    # apikey:
+    # apikey_secret:
+    #   name:
+    #   key:
+
+  # -- used by the web app for sessions and cache
+  redis:
+    host: redis
+    port: 6379
+
+  # -- optional, only used if a driver is set to memcached
+  memcached: {}
+    # host: memcached
+    # port: 11211
+
+  sentry: {}
+    # dsn:
+
+  analytics: {}
+    # ush_analytics_prefix:
+    # gtm_container_id:
+    # cookiebot_id:
+    # intercom_appid:
+
+api:
+  replicas: 1
+  debug: "false"
+  drivers:
+    cache: file
+    session: file
+  params:
+    php_exec_time_limit: 3600
+    # -- how long to wait for the database to accept connections on start
+    dependency_wait_timeout: 180s
+  limits:
+    cpu: "1"
+    memory: "256Mi"
+  requests:
+    cpu: "10m"
+    memory: "128Mi"
+  # -- pods wait for migrations before starting, so allow for that
+  startupProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    failureThreshold: 300
+  livenessProbe:
+    periodSeconds: 10
+    failureThreshold: 3
+  readinessProbe:
+    periodSeconds: 5
+    failureThreshold: 3
+  # tolerations: []
+  # nodeSelector: {}
+  # deployment:
+  #   annotations:
+  extraEnv: []
+  ingress:
+    enabled: false
+    # className: nginx
+    # host: api.example.com
+    # aliases: []
+    # annotations:
+    # tls:
+    # - secretName: api.example.com
+    #   hosts:
+    #   - api.example.com
+
+web:
+  replicas: 1
+  debug: "false"
+  drivers:
+    cache: redis
+    session: redis
+  limits:
+    cpu: "1"
+    memory: "256Mi"
+  requests:
+    cpu: "10m"
+    memory: "128Mi"
+  startupProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    failureThreshold: 150
+  livenessProbe:
+    periodSeconds: 10
+    failureThreshold: 3
+  readinessProbe:
+    periodSeconds: 5
+    failureThreshold: 3
+  # tolerations: []
+  # nodeSelector: {}
+  # deployment:
+  #   annotations:
+  extraEnv: []
+  ingress:
+    enabled: false
+    # className: nginx
+    # host: example.com
+    # aliases:
+    # - www.example.com
+    # annotations:
+    # tls:
+
+# Database migrations (plus seeding and the oauth client)
+migrations:
+  # -- run them in a job before each helm install/upgrade
+  enabled: true
+  # -- also run them when api pods start, so image updates that bypass helm
+  # (i.e. keel) apply new migrations. Rolling updates start one new pod at a
+  # time, so pods don't migrate concurrently. If false, api pods wait until no
+  # migrations are pending
+  onPodStart: true
+  activeDeadlineSeconds: 900
+  limits:
+    cpu: "1"
+    memory: "256Mi"
+  requests:
+    cpu: "10m"
+    memory: "128Mi"

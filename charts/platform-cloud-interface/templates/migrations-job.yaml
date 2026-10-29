@@ -1,0 +1,52 @@
+{{- if .Values.migrations.enabled }}
+---
+# Runs the api container's initialisation with migrations enabled (migrate,
+# seed, oauth client), then exits instead of starting the web server
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pci.apiName" . }}-migrations
+  labels:
+    app: platform-cloud-interface
+    service: migrations
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: {{ .Values.migrations.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        app: platform-cloud-interface
+        service: migrations
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: migrations
+        image: {{ include "pci.image" (dict "Values" .Values "component" .Values.image.api) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        # the image's entrypoint chain, minus the web server endpoint
+        command:
+        - /bin/bash
+        - /init.dockerize.sh
+        - /run.run.sh
+        - "true"
+        env:
+{{ include "pci.apiEnv" . | indent 8 }}
+        - name: RUN_DATABASE_MIGRATIONS
+          value: "true"
+        resources:
+          limits:
+{{ toYaml .Values.migrations.limits | indent 12 }}
+          requests:
+{{ toYaml .Values.migrations.requests | indent 12 }}
+{{- with .Values.api.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+{{- end }}
+{{- with .Values.api.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- end }}

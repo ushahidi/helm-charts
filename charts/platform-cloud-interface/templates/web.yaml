@@ -1,0 +1,96 @@
+{{- $name := include "pci.webName" . -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    app: platform-cloud-interface
+    service: web
+{{- with (.Values.web.deployment | default dict).annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
+  replicas: {{ .Values.web.replicas }}
+  selector:
+    matchLabels:
+      app: platform-cloud-interface
+      service: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: platform-cloud-interface
+        service: web
+    spec:
+      containers:
+      - name: web
+        image: {{ include "pci.image" (dict "Values" .Values "component" .Values.image.web) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /bin/bash
+        - /entrypoint.CES.sh
+        - start
+        env:
+{{ include "pci.webEnv" . | indent 8 }}
+        ports:
+        - name: http
+          containerPort: 8080
+        # /login renders without calling the api
+        startupProbe:
+          initialDelaySeconds: {{ .Values.web.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.web.startupProbe.periodSeconds }}
+          failureThreshold: {{ .Values.web.startupProbe.failureThreshold }}
+          httpGet:
+            path: /login
+            port: http
+        livenessProbe:
+          periodSeconds: {{ .Values.web.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.web.livenessProbe.failureThreshold }}
+          tcpSocket:
+            port: http
+        readinessProbe:
+          periodSeconds: {{ .Values.web.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.web.readinessProbe.failureThreshold }}
+          httpGet:
+            path: /login
+            port: http
+        resources:
+          limits:
+{{ toYaml .Values.web.limits | indent 12 }}
+          requests:
+{{ toYaml .Values.web.requests | indent 12 }}
+{{- with .Values.web.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+{{- end }}
+{{- with .Values.web.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    app: platform-cloud-interface
+    service: web
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: platform-cloud-interface
+    service: web
+{{ include "pci.ingress" (dict "name" $name "service" "web" "component" .Values.web) }}
