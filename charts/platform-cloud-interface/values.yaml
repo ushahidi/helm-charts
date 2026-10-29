@@ -174,11 +174,15 @@ web:
     # annotations:
     # tls:
 
-# -- run database migrations (plus seeding and the oauth client) in a job
-# before each install/upgrade. If disabled, run them some other way: api pods
-# wait until no migrations are pending
+# Database migrations (plus seeding and the oauth client)
 migrations:
+  # -- run them in a job before each helm install/upgrade
   enabled: true
+  # -- also run them when api pods start, so image updates that bypass helm
+  # (i.e. keel) apply new migrations. Rolling updates start one new pod at a
+  # time, so pods don't migrate concurrently. If false, api pods wait until no
+  # migrations are pending
+  onPodStart: true
   activeDeadlineSeconds: 900
   limits:
     cpu: "1"

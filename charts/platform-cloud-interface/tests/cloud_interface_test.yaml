@@ -22,14 +22,19 @@ tests:
       path: spec.template.spec.containers[0].image
       value: 513259414768.dkr.ecr.eu-west-1.amazonaws.com/platform-cloud-interface-web:v2026.43.0
 
-- it: api pods wait for migrations, which run in a pre-install/upgrade hook job
+- it: migrates in a pre-install/upgrade hook job and when api pods start
   values: [./values/minimal.yaml]
   asserts:
   - template: templates/api.yaml
     documentIndex: 0
     contains:
       path: spec.template.spec.containers[0].env
-      content: {name: RUN_DATABASE_MIGRATIONS, value: "false"}
+      content: {name: RUN_DATABASE_MIGRATIONS, value: "true"}
+  - template: templates/api.yaml
+    documentIndex: 0
+    equal:
+      path: spec.strategy.rollingUpdate
+      value: {maxSurge: 1, maxUnavailable: 0}
   - template: templates/migrations-job.yaml
     equal:
       path: metadata.annotations["helm.sh/hook"]
@@ -47,9 +52,15 @@ tests:
   values: [./values/minimal.yaml]
   set:
     migrations.enabled: false
-  template: templates/migrations-job.yaml
+    migrations.onPodStart: false
   asserts:
-  - hasDocuments: {count: 0}
+  - template: templates/migrations-job.yaml
+    hasDocuments: {count: 0}
+  - template: templates/api.yaml
+    documentIndex: 0
+    contains:
+      path: spec.template.spec.containers[0].env
+      content: {name: RUN_DATABASE_MIGRATIONS, value: "false"}
 
 - it: takes credentials from secrets
   values: [./values/full.yaml]
