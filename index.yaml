@@ -389,6 +389,17 @@ entries:
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-client-0.0.1-alpha.6/ushahidi-platform-client-0.0.1-alpha.6.tgz
     version: 0.0.1-alpha.6
+  ushahidi-platform-cloud-interface:
+  - apiVersion: v1
+    created: "2026-10-29T10:22:50.049416647Z"
+    description: Ushahidi platform cloud interface (deployment sign-up web app and
+      its API)
+    digest: 7cec552e0fef72a905a1a6fd8889ba4fd75e0c704b2617f5aac53aba7e25f1c7
+    icon: https://github.ushahidi.org/helm-charts/icon.png
+    name: ushahidi-platform-cloud-interface
+    urls:
+    - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-platform-cloud-interface-0.1.0/ushahidi-platform-cloud-interface-0.1.0.tgz
+    version: 0.1.0
   ushahidi-ussd-engine:
   - apiVersion: v1
     created: "2022-08-08T05:54:43.641717345Z"
@@ -454,4 +465,4 @@ entries:
     urls:
     - https://github.com/ushahidi/helm-charts/releases/download/ushahidi-ussd-engine-0.0.1-alpha.1/ushahidi-ussd-engine-0.0.1-alpha.1.tgz
     version: 0.0.1-alpha.1
-generated: "2024-12-20T18:44:32.500070728Z"
+generated: "2026-10-29T10:22:50.051010374Z"
